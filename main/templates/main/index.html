@@ -1,0 +1,180 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block title %}Chronobiotics{% endblock %}
+
+{% block content %}
+
+<div class="container text-center">
+    <br>
+    <br>
+    <br>
+    <img src="{% static 'image/chrono.png' %}" class="rounded mx-auto d-block" width="800" height="400" alt="Logo">
+    <h1 class="title"> List of Chronobiotics </h1>
+    <br>
+
+    <!-- Поисковая строка -->
+    <nav class="navbar navbar-second bg-second">
+        <form method="get" class="form-inline">
+            <input class="form-control mr-sm-2" type="search" name="search" placeholder="Insert name, formula, SMILES etc."
+                   value="{{ query }}" aria-label="Search">
+
+        </form>
+    </nav>
+</div>
+<br>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">SMILES</th>
+            <th scope="col">FDA Status</th>
+            <th scope="col">Effects</th>
+            <th scope="col">Targets</th>
+            <th scope="col">Mechanisms</th>
+            <th scope="col">Articles</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in page_obj %}
+            <tr>
+                <td>
+                    <button type="button"
+                            class="btn btn-second"
+                            data-toggle="modal"
+                            data-target="#infoModal"
+                            data-name="{{ item.gname }}"
+                            data-formula="{{ item.molecula }}"
+                            data-smiles="{{ item.smiles }}"
+                            data-image="{{ item.updphoto.url }}"
+                            data-linkname="{{ item.linkname }}"
+                            data-description="{{ item.description }}">
+                        {{ item.gname }}
+                    </button>
+                </td>
+                <td>{{ item.smiles }}</td>
+                <td>{{ item.fdastatus }}</td>
+                <td>
+                    {% for effect in item.effect.all %}
+                        {{ effect.Effectname }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for target in item.target.all %}
+                        <a href="{{ target.targeturl }}" target="_blank" class="text-decoration-none">
+                            {{ target.targetsname }}
+                        </a>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for mechanism in item.mechanisms.all %}
+                        {{ mechanism.mechanismname }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for article in item.articles.all %}
+                        <a href="{{ article.articleurl }}" target="_blank" class="text-decoration-none">
+                            {{ article.articlename }}
+                        </a>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<!-- Модальное окно -->
+<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="infoModalLabel">Information</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <img id="modal-image" src="" alt="Molecule Image" class="img-fluid mb-3">
+                    </div>
+                    <div class="col-md-8">
+                        <p><strong>Name:</strong> <span id="modal-name"></span></p>
+                        <p><strong>Synonyms:</strong> <span id="modal-synonyms"></span></p>
+                        <p><strong>Formula:</strong> <span id="modal-formula"></span></p>
+                        <p><strong>SMILES:</strong> <span id="modal-smiles"></span></p>
+                        <p><strong>FDA Status:</strong> <span id="modal-fdastatus"></span></p>
+                        <p><strong>Description:</strong> <span id="modal-description"></span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a id="modal-detail-link" href="#" class="btn btn-primary">See more details</a>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Пагинация -->
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?search={{ query }}&page=1">First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?search={{ query }}&page={{ page_obj.previous_page_number }}">Previous</a>
+            </li>
+        {% endif %}
+
+        <li class="page-item active">
+            <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        </li>
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?search={{ query }}&page={{ page_obj.next_page_number }}">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?search={{ query }}&page={{ page_obj.paginator.num_pages }}">Last</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script>
+    $('#infoModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var modal = $(this);
+
+        // Основные данные
+        modal.find('#modal-name').text(button.data('name'));
+        modal.find('#modal-formula').text(button.data('formula'));
+        modal.find('#modal-smiles').text(button.data('smiles'));
+        modal.find('#modal-fdastatus').text(button.data('fdastatus'));
+        modal.find('#modal-description').text(button.data('description'));
+        modal.find('#modal-detail-link').attr('href', '/substance/' + button.data('linkname') + '/');
+
+        // Загрузка синонимов через AJAX
+        $.get('/get_synonyms/' + button.data('linkname') + '/', function(data) {
+            var synonyms = data.synonyms.join(', ');
+            modal.find('#modal-synonyms').text(synonyms || 'No synonyms available');
+        });
+
+        // Изображение
+        var imageElement = modal.find('#modal-image');
+        if (button.data('image')) {
+            imageElement.attr('src', button.data('image'));
+            imageElement.show();
+        } else {
+            imageElement.hide();
+        }
+    });
+</script>
+
+{% endblock %}
+
