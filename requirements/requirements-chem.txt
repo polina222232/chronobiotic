@@ -1,20 +1,23 @@
-# =============================================================================
-# CORE CHEMISTRY: RDKit — wheels for Python 3.13 available from conda-forge
-# =============================================================================
-rdkit==2024.09.3
-
-chempy==0.8.3
-molmass==0.8.4
-periodictable==1.7.0
-
-# =============================================================================
-# CHEMICAL DATABASE CLIENTS
-# =============================================================================
-chembl-webresource-client==0.10.9
+# Core chemistry libraries
+rdkit==2023.9.5
+openbabel-wheel==3.1.1.1
+mordred==1.2.0  # Molecular descriptors
 pubchempy==1.0.4
+chembl-webresource-client==0.10.8
 
-# =============================================================================
-# VISUALIZATION
-# =============================================================================
-py3Dmol==2.2.0
-biopython==1.84
+# Chemical similarity and fingerprints
+chemfp==3.5.1
+mol2vec==0.2.3
+molfeat==0.9.3
+
+# Molecular visualization
+py3Dmol==2.0.1
+nglview==3.1.1
+
+# Chemical file formats
+biopython==1.81
+pdb-tools==0.0.6
+
+# Machine learning for chemistry
+deepchem==2.7.2
+chemprop==1.6.0

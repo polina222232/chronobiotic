@@ -10,29 +10,79 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+f"""
+Django settings for chronobiotic project.
+Chronobiotic — LLM + RAG + Chem + KAG платформa.
+
+Python 3.13 / Django 5.1.2.
+"""
+
+# =============================================================================
+# IMPORTS
+# =============================================================================
 from pathlib import Path
 import os
-# from chronobiotic.settings import DEBUG
-from django.conf.global_settings import STATICFILES_DIRS
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+import sys
+import json
+from typing import List
+
+# =============================================================================
+# BASE CONFIG
+# =============================================================================
 BASE_DIR = Path(__file__).resolve().parent.parent
+ENVIRONMENT = os.getenv("ENVIRONMENT", "development").lower()
 
+# =============================================================================
+# SECRET KEY / SECURITY
+# =============================================================================
+SECRET_KEY = os.getenv(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-c)qj@2sl%!)6n)z*ibqvh54gp6c&_m6mwn%jxo(&i7!=(@(ps&"
+)
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
+DEBUG = ENVIRONMENT != "production"
+ALLOWED_HOSTS: List[str] = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-c)qj@2sl%!)6n)z*ibqvh54gp6c&_m6mwn%jxo(&i7!=(@(ps&'
+# =============================================================================
+# LOADING SECRETS (AWS → .env FALLBACK)
+# =============================================================================
+def load_secrets() -> None:
+    """Load secrets from AWS Secrets Manager or fallback to .env."""
+    if ENVIRONMENT == "production":
+        try:
+            import boto3
+            client = boto3.client(
+                "secretsmanager",
+                region_name=os.getenv("AWS_REGION", "eu-west-1")
+            )
+            secret = client.get_secret_value(
+                SecretId=os.getenv("SECRETS_NAME", "chronobiotic/prod")
+            )
+            secrets = json.loads(secret["SecretString"])
+            for k, v in secrets.items():
+                os.environ.setdefault(k, v)
+            print("✔ Secrets loaded from AWS Secrets Manager")
+            return
+        except Exception as e:
+            print(f"⚠ AWS Secrets Manager unavailable: {e}")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+    # Local or staging
+    if not os.getenv("OPENAI_API_KEY"):
+        from dotenv import load_dotenv
+        env_path = BASE_DIR / (".env.prod" if "prod" in ENVIRONMENT else ".env")
+        if env_path.exists():
+            load_dotenv(env_path)
+            print(f"✔ Secrets loaded from {env_path.name}")
+        else:
+            print("⚠ .env not found; using system env vars only.")
 
-ALLOWED_HOSTS = []
+load_secrets()
 
-
-# Application definition
-
+# =============================================================================
+# APPLICATIONS
+# =============================================================================
 INSTALLED_APPS = [
+    # Django core
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,25 +91,48 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.postgres',
 
-    'main'
+    # Third-party
+    'pgvector.django',
+    #'corsheaders',
+    #'rest_framework',
+    #'channels',
+
+    # Project apps
+    'main',
+    'main.agent',
+    'main.api',
 ]
 
+# =============================================================================
+# MIDDLEWARE
+# =============================================================================
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# =============================================================================
+# URL CONFIG
+# =============================================================================
 ROOT_URLCONF = 'chronobiotic.urls'
 
+# =============================================================================
+# TEMPLATES
+# =============================================================================
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -72,70 +145,131 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'chronobiotic.wsgi.application'
+# =============================================================================
+# ASGI / WSGI
+# =============================================================================
+ASGI_APPLICATION = "chronobiotic.asgi.application"
+WSGI_APPLICATION = "chronobiotic.wsgi.application"
 
+# =============================================================================
+# CHANNELS (WEBSOCKETS)
+# =============================================================================
+if ENVIRONMENT == "production":
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [os.getenv("REDIS_URL", "redis://redis:6379/0")],
+            },
+        },
+    }
+else:
+    CHANNEL_LAYERS = {
+        "default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}
+    }
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+# =============================================================================
+# DATABASE
+# =============================================================================
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'chrono',
-        'USER': 'solar',
-        'PASSWORD': 'solarnotfound',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv("POSTGRES_DB", "chrono"),
+        'USER': os.getenv("POSTGRES_USER", "solar"),
+        'PASSWORD': os.getenv("POSTGRES_PASSWORD", "solarnotfound"),
+        'HOST': os.getenv("POSTGRES_HOST", "localhost"),
+        'PORT': os.getenv("POSTGRES_PORT", "5432"),
+        'OPTIONS': {
+            "sslmode": "require" if ENVIRONMENT == "production" else "prefer"
+        }
     }
 }
 
-# Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+# =============================================================================
+# PASSWORD VALIDATION
+# =============================================================================
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
-
+# =============================================================================
+# INTERNATIONALIZATION
+# =============================================================================
 LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+TIME_ZONE = "UTC"
 USE_I18N = True
-
 USE_TZ = True
 
+# =============================================================================
+# STATIC & MEDIA
+# =============================================================================
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / "media"
 
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
-#STATICFILES_DIRS=BASE_DIR/'main/static'
-MEDIA_URL =  '/media/'
-MEDIA_ROOT = BASE_DIR/'media'
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
+# =============================================================================
+# SECURITY — PRODUCTION
+# =============================================================================
+if not DEBUG:
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# =============================================================================
+# CORS
+# =============================================================================
+CORS_ALLOWED_ORIGINS = os.getenv(
+    "CORS_ORIGINS",
+    "http://localhost:3000,http://127.0.0.1:3000"
+).split(",")
+
+CORS_ALLOW_CREDENTIALS = True
+
+# =============================================================================
+# LOGGING
+# =============================================================================
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "stream": sys.stdout,
+        },
+    },
+
+    "root": {
+        "handlers": ["console"],
+        "level": os.getenv("LOG_LEVEL", "INFO"),
+    },
+}
+
+# =============================================================================
+# CHRONOBIOTIC CUSTOM SETTINGS
+# =============================================================================
+RAG_INDEX_DIR = os.getenv("RAG_INDEX_DIR", str(BASE_DIR / "rag_index"))
+ARTICLES_STORAGE = BASE_DIR / "media" / "articles"
+
+MAX_PROMPT_TOKENS = int(os.getenv("MAX_PROMPT_TOKENS", "32000"))
+
+LLM_PRIORITY = os.getenv(
+    "LLM_PRIORITY",
+    "ollama,groq,openai,gemini,anthropic,deepseek,mistral,qwen"
+).split(",")
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

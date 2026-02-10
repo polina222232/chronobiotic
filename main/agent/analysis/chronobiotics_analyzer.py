@@ -1,0 +1,4 @@
+# Файл агента
+
+
+class ChronobioticAnalyzer:

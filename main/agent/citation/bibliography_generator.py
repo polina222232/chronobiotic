@@ -1,0 +1,3 @@
+# Файл агента
+
+class BibliographyGenerator:

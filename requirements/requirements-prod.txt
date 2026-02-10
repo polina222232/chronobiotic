@@ -1,0 +1,24 @@
+# Production server
+gunicorn==21.2.0
+uvicorn[standard]==0.29.0
+whitenoise==6.6.0
+
+# Database optimization
+django-redis==5.3.0
+django-postgresql-jsonb==0.3.0
+
+# Monitoring and logging
+prometheus-client==0.20.0
+django-prometheus==2.3.1
+structlog==24.1.0
+
+# Security headers
+django-security==1.2.1
+django-axes==6.0.0
+
+# Performance optimization
+django-compressor==4.4
+django-cacheops==7.2.1
+
+# Email
+django-anymail==10.2

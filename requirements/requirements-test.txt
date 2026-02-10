@@ -1,0 +1,23 @@
+# Test frameworks
+pytest==8.1.1
+pytest-django==4.8.0
+pytest-xdist==3.5.0
+pytest-benchmark==4.0.0
+
+# Mocking and fixtures
+responses==0.24.1
+vcrpy==5.2.1
+moto==4.2.6
+
+# Coverage and quality
+coverage==7.4.4
+codecov==2.1.13
+radon==6.0.1
+
+# Load testing
+locust==2.20.2
+pytest-load==0.5.0
+
+# Database testing
+mixer==7.3.5
+django-test-migrations==1.3.0
