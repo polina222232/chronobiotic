@@ -1,4 +1,4 @@
-# Файл агента
+
 
 
 class PatternFinder:

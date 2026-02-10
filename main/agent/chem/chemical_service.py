@@ -1,3 +1,3 @@
-# Файл агента
+"""Module for ..."""
 
-class ChemicalService:
+# Placeholder file

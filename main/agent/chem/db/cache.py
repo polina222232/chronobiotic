@@ -1,2 +1,3 @@
-﻿# Файл агента
+"""Module for ..."""
 
+# Placeholder file

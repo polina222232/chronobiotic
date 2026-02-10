@@ -1,2 +1,2 @@
-# Файл агента
-
+class BaseAgent:
+    def __init__(self):

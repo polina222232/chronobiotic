@@ -1,4 +1,2 @@
-# Файл агента
-
-class CitationExtractorAgent:
+class CitationExtractor:
     def __init__(self):

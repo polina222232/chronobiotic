@@ -1,0 +1,17 @@
+<script id="messageTemplate" type="text/template">
+    <div class="message-bubble {{role}}" data-message-id="{{id}}">
+        <div class="message-avatar">
+            {{#if_eq role "user"}}<i class="fas fa-user"></i>{{else}}<i class="fas fa-robot"></i>{{/if_eq}}
+        </div>
+        <div class="message-content">
+            <div class="message-text">{{{content}}}</div>
+            <div class="message-time">{{time}}</div>
+            <div class="message-actions">
+                <button class="copy-message"><i class="fas fa-copy"></i></button>
+                {{#if_eq role "assistant"}}
+                <button class="speak-message"><i class="fas fa-volume-up"></i></button>
+                {{/if_eq}}
+            </div>
+        </div>
+    </div>
+</script>

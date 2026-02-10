@@ -1,33 +1,6 @@
 version: '3.8'
 
 services:
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: chronobiotic
-      POSTGRES_USER: chronobiotic
-      POSTGRES_PASSWORD: chronobiotic_pass
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-
-  neo4j:
-    image: neo4j:5-community
-    environment:
-      NEO4J_AUTH: neo4j/chronobiotic_pass
-    ports:
-      - "7474:7474"
-      - "7687:7687"
-    volumes:
-      - neo4j_data:/data
-      - neo4j_logs:/logs
-
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
@@ -35,16 +8,47 @@ services:
       - .:/app
     ports:
       - "8000:8000"
-    environment:
-      DATABASE_URL: postgres://chronobiotic:chronobiotic_pass@db:5432/chronobiotic
-      REDIS_URL: redis://redis:6379/0
-      NEO4J_URL: bolt://neo4j:7687
+    env_file:
+      - .env
     depends_on:
-      - db
       - redis
-      - neo4j
+      - db
+
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: chronobiotic
+      POSTGRES_USER: chronobiotic_user
+      POSTGRES_PASSWORD: changeme
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  celery:
+    build: .
+    command: celery -A chronobioticagent worker -l info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - db
+
+  celery-beat:
+    build: .
+    command: celery -A chronobioticagent beat -l info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - db
 
 volumes:
   postgres_data:
-  neo4j_data:
-  neo4j_logs:

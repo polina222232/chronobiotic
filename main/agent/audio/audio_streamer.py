@@ -1,5 +1,3 @@
+"""Module for ..."""
 
-
-class AudioStreamer:
-    def __init__(self):
-    
+# Placeholder file

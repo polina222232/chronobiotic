@@ -1,2 +1,2 @@
-# Файл агента
-
+class MechanismInvestigator:
+    def __init__(self):

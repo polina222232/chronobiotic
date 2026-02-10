@@ -1,1 +1,3 @@
-# Тест
+"""Module for ..."""
+
+# Placeholder file

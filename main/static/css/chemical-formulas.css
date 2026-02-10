@@ -1,0 +1,76 @@
+/* Chemical Formulas Styling */
+.chemical-formula {
+    font-family: 'Courier New', 'Fira Code', monospace;
+    font-size: 1rem;
+    padding: 8px 15px;
+    border-radius: 8px;
+    display: inline-block;
+    line-height: 1.5;
+}
+
+.chemical-formula sub {
+    font-size: 0.7rem;
+    vertical-align: sub;
+    line-height: 1;
+}
+
+.chemical-formula sup {
+    font-size: 0.7rem;
+    vertical-align: super;
+    line-height: 1;
+}
+
+/* Для отображения в модальном окне */
+#modal-formula {
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    background: #f8f9fa;
+    padding: 8px 15px;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+#modal-formula sub {
+    font-size: 0.7rem;
+    vertical-align: sub;
+}
+
+#modal-smiles {
+    word-break: break-all;
+    white-space: normal;
+    display: block;
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    background: #2d2e32;
+    color: #98f6b0;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.description-box {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    max-height: 150px;
+    overflow-y: auto;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.copy-btn {
+    transition: all 0.2s ease;
+}
+
+.copy-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Анимация при обновлении формулы */
+@keyframes formulaHighlight {
+    0% { background-color: #fff3cd; }
+    100% { background-color: #f8f9fa; }
+}
+
+.formula-updated {
+    animation: formulaHighlight 0.5s ease;
+}

@@ -1,0 +1,14 @@
+ .modal-image {
+            width: 500px;
+            height: 500px;
+            object-fit: contain; /* Изображение сохраняет пропорции и не обрезается */
+            display: block;
+            margin: 0 auto;
+        }
+ footer {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            text-align: center;
+            border-top: 1px solid #e7e7e7;
+ }

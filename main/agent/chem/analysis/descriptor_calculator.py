@@ -1,5 +1,3 @@
+"""Module for ..."""
 
-
-def DescriptorCalculator:
-    def __init__(self):
-    
+# Placeholder file

@@ -1,5 +1,3 @@
+"""Module for ..."""
 
-
-class LocaleDetector:
-    def __init__(self):
-    
+# Placeholder file

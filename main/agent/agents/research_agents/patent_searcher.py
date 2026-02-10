@@ -1,2 +1,2 @@
-# Файл агента
-
+class PatentSearcher:
+    def __init__(self):

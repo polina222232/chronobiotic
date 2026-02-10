@@ -1,22 +1,1 @@
-"""Django's command-line utility for administrative tasks."""
-
-import os
-import sys
-
-
-def main():
-    """Run administrative tasks."""
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "chronobiotic.settings")
-    try:
-        from django.core.management import execute_from_command_line
-    except ImportError as exc:
-        raise ImportError(
-            "Couldn't import Django. Are you sure it's installed and "
-            "available on your PYTHONPATH environment variable? Did you "
-            "forget to activate a virtual environment?"
-        ) from exc
-    execute_from_command_line(sys.argv)
-
-
-if __name__ == "__main__":
-    main()
+"""Django's command-line utility with automatic migrations and server startup."""import osimport subprocessimport sysdef main():    """Run administrative tasks with automatic migrations and server startup."""    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "chronobiotic.settings")        try:        from django.core.management import execute_from_command_line    except ImportError as exc:        raise ImportError(            "Couldn't import Django. Are you sure it's installed and "            "available on your PYTHONPATH environment variable? Did you "            "forget to activate a virtual environment?"        ) from exc        # Если аргументы не переданы или передан только 'runserver' без других команд    if len(sys.argv) == 1 or (len(sys.argv) >= 2 and sys.argv[1] == 'runserver'):        print("🚀 Выполнение автоматической настройки перед запуском сервера...")                # Выполняем makemigrations        print("\n📝 Создание миграций (makemigrations)...")        subprocess.run([sys.executable, "manage.py", "makemigrations"])                # Выполняем migrate        print("\n🔄 Применение миграций (migrate)...")        subprocess.run([sys.executable, "manage.py", "migrate"])                # Запускаем сервер        print("\n🌐 Запуск сервера разработки (runserver)...")        if len(sys.argv) >= 2 and sys.argv[1] == 'runserver':            execute_from_command_line(sys.argv)        else:            execute_from_command_line([sys.argv[0], "runserver"] + sys.argv[1:])    else:        # Выполняем обычную команду без автоматических миграций        execute_from_command_line(sys.argv)if __name__ == "__main__":    main()

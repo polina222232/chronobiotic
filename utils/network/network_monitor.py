@@ -1,1 +1,3 @@
-# Утилита
+"""Module for ..."""
+
+# Placeholder file

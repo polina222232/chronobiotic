@@ -1,5 +1,3 @@
+"""Module for ..."""
 
-
-class GraphFeaters:
-    def __init__(self):
-    
+# Placeholder file

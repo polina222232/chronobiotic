@@ -1,3 +1,2 @@
-# Файл агента
 
 class CitationValidator:

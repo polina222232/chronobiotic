@@ -1,0 +1,34 @@
+{% load static %}
+<aside class="chat-sidebar" id="chatSidebar">
+    <div class="sidebar-header">
+        <div class="logo">
+            <div class="logo-icon">AI</div>
+            <h2>ChronoBot</h2>
+        </div>
+        <button class="new-chat-btn" id="newChatBtn">➕ New chat</button>
+    </div>
+
+    <!-- History -->
+    <div class="history-container">
+        <div class="history-header">📋 Recent chats</div>
+        <ul class="history-list" id="historyList"></ul>
+    </div>
+
+    <!-- Model Selector -->
+    <div class="model-selector">
+        <div class="model-header">🧠 AI Model
+            {% include 'main/agent_chat/model_selector.html' %}
+        </div>
+
+    </div>
+
+    <!-- Settings -->
+    <div class="settings-container">
+        {% include 'main/agent_chat/agent_settings.html' %}
+    </div>
+
+    <div class="sidebar-footer">
+        <div class="user-info">👤 Guest</div>
+        <button class="clear-btn" id="clearHistoryBtn">🗑️</button>
+    </div>
+</aside>

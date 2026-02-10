@@ -1,6 +1,3 @@
+"""Module for ..."""
 
-
-
-class Classfier:
-    def __init__(self):
-    
+# Placeholder file

@@ -1,2 +1,2 @@
-# Файл агента
-
+class ContentAnalyzer:
+    def __init__(self):

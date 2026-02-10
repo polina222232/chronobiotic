@@ -1,3 +1,5 @@
-# Файл агента
+"""Module for ..."""
 
-class InsigntExtractor:
+
+class InsightExtractor:
+    def __init__(self):

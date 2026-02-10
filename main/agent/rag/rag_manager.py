@@ -1,2 +1,2 @@
-# Файл агента
-
+class RagManager:
+    def __init__(self):

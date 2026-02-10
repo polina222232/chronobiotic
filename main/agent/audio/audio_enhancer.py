@@ -1,6 +1,3 @@
+"""Module for ..."""
 
-
-
-class AudioEnhancer:
-    def __init__(self):
-    
+# Placeholder file

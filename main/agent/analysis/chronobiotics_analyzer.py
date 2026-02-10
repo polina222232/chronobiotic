@@ -1,4 +1,5 @@
-# Файл агента
+
 
 
 class ChronobioticAnalyzer:
+    def __init__(self):

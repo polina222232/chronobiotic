@@ -1,3 +1,0 @@
-# Файл агента
-
-class ReferenceBuilder:

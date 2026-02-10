@@ -1,2 +1,2 @@
-# Файл агента
-
+class WebScraper:
+    def __init__(self):

@@ -1,4 +1,2 @@
-# Файл агента
-
-class SourceTrackerAgent:
+class SourceTracer:
     def __init__(self):

@@ -1,3 +1,3 @@
+"""Module for ..."""
 
-
-class VoiceConfig:
+# Placeholder file

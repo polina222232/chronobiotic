@@ -1,5 +1,3 @@
+"""Module for ..."""
 
-
-class AdmentPredictor:
-
-
+# Placeholder file

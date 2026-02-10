@@ -1,0 +1,37 @@
+<main class="chat-main">
+    <div class="chat-header">
+        <h1>Chronobiotics AI Assistant</h1>
+        <div class="status">
+            <div class="status-dot"></div>
+            <span id="statusText">Ready</span>
+        </div>
+    </div>
+
+    <div class="messages-container" id="messagesContainer">
+        <div class="messages" id="messages">
+            {% include 'main/agent_chat/chat_messages.html' %}
+        </div>
+    </div>
+
+    {% include 'main/agent_chat/loading_indicator.html' %}
+
+    <div class="input-container">
+        <div class="input-wrapper">
+            <textarea id="messageInput" placeholder="Ask me about chronobiotics..." rows="1"></textarea>
+            <div class="input-actions">
+                {% include 'main/agent_chat/file_upload.html' %}
+                {% include 'main/agent_chat/voice_interface.html' %}
+                {% include 'main/agent_chat/language_selector.html' %}
+                <button class="send-btn" id="sendBtn">➤</button>
+            </div>
+        </div>
+        <input id="fileInput" multiple style="display:none" type="file">
+        <div class="upload-progress" id="uploadProgress" style="display:none">
+            <div id="uploadStatus">Uploading...</div>
+            <div class="upload-bar" id="uploadBar"></div>
+        </div>
+    </div>
+
+    {% include 'main/agent_chat/citation_display.html' %}
+    {% include 'main/agent_chat/audio_message.html' %}
+</main>

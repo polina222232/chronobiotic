@@ -1,4 +1,3 @@
-# Файл агента
+"""Module for ..."""
 
-class PhysicochemicalProps:
-    def __init__(self):
+# Placeholder file

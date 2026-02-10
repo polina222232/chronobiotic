@@ -1,2 +1,2 @@
-# Файл агента
-
+class HypothesisGenerator:
+    def __init__(self):

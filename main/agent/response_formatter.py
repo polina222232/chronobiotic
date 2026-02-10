@@ -1,2 +1,2 @@
-# Файл агента
-
+class ResponceFormatter:
+    def __init__(self):

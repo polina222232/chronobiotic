@@ -1,3 +1,3 @@
+"""Module for ..."""
 
-
-class MultilingualConfig:
+# Placeholder file

@@ -1,3 +1,2 @@
-
-class efficacy_evaluator:
-
+class EfficcyEvaluator:
+    def __init__(self):

@@ -1,4 +1,2 @@
-
-
-class SourceValidatorAgent:
+class SourceValidator:
     def __init__(self):

@@ -1,8 +1,37 @@
-# Python
+# Django
+*.log
+*.pot
+*.pyc
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.env
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+Thumbs.db
+
+# Coverage
+.coverage
+htmlcov/
+
+# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -16,71 +45,42 @@ parts/
 sdist/
 var/
 wheels/
+pip-wheel-metadata/
 share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
 
-# Django
-*.log
-*.pot
-*.pyc
-db.sqlite3
-media/
-staticfiles/
+# PyInstaller
+*.manifest
+*.spec
 
-# Virtual Environment
-venv/
-env/
-ENV/
-env.bak/
-venv.bak/
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Project specific
-chroma_db/
-logs/
-*.db
-*.sqlite3
-*.dump
-
-# Environment variables
-.env
-.env.local
-.env.*.local
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# Testing
-.coverage
+# Unit test / coverage reports
 htmlcov/
-.pytest_cache/
 .tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
 coverage.xml
 *.cover
 *.py,cover
 .hypothesis/
+.pytest_cache/
 
-# Docker
-*.dockerignore
-Dockerfile
+# Jupyter Notebook
+.ipynb_checkpoints
 
-# Backups
-*.bak
-*.backup
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/

@@ -1,5 +1,3 @@
+"""Module for ..."""
 
-
-class MessageLocalizer:
-    def __init__(self):
-    
+# Placeholder file

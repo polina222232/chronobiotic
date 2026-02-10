@@ -1,2 +1,2 @@
-# Файл агента
-
+class DataStorage:
+    def __init__(self):

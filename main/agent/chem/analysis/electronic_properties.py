@@ -1,5 +1,3 @@
+"""Module for ..."""
 
-
-class ElectonicProperties:
-    def __init__(self):
-    
+# Placeholder file

@@ -1,6 +1,3 @@
+"""Module for ..."""
 
-
-
-class AudioConverter:
-    def __init__(self):
-    
+# Placeholder file

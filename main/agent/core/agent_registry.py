@@ -1,3 +1,3 @@
+"""Module for ..."""
 
-
-class AgentRegistry:
+# Placeholder file

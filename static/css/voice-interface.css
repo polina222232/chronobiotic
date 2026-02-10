@@ -1,0 +1,47 @@
+.voice-interface {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+}
+
+.voice-record-btn, .voice-stop-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.voice-record-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+.voice-record-btn.recording {
+    animation: pulse 1.5s infinite;
+    background: linear-gradient(135deg, #f5576c, #f093fb);
+}
+
+.voice-stop-btn { background: #dc3545; color: white; display: none; }
+
+.voice-wave-container {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+}
+
+.voice-wave {
+    width: 3px;
+    height: 20px;
+    background: #667eea;
+    animation: wave 1s infinite;
+}
+
+@keyframes wave {
+    0%, 100% { height: 10px; }
+    50% { height: 25px; }
+}
+
+.voice-status-indicator { font-size: 0.7rem; color: #999; }

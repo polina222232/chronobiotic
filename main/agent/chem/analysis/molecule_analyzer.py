@@ -1,5 +1,3 @@
+"""Module for ..."""
 
-
-class MoleculeAnalyzer:
-    def __init__(self):
-    
+# Placeholder file

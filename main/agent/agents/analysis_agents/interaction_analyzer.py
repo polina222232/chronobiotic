@@ -1,3 +1,1 @@
-# Файл агента
-
-class interaction_analyzer:
+class InterractionAnalyzer:
