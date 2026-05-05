@@ -1,9 +1,16 @@
 <main class="chat-main">
     <div class="chat-header">
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20">
+                <line x1="3" x2="21" y1="12" y2="12"/>
+                <line x1="3" x2="21" y1="6" y2="6"/>
+                <line x1="3" x2="21" y1="18" y2="18"/>
+            </svg>
+        </button>
         <h1>Chronobiotics AI Assistant</h1>
         <div class="status">
-            <div class="status-dot"></div>
-            <span id="statusText">Ready</span>
+            <span class="status-dot"></span>
+            <span data-i18n="ready" id="statusText">Ready</span>
         </div>
     </div>
 
@@ -11,27 +18,34 @@
         <div class="messages" id="messages">
             {% include 'main/agent_chat/chat_messages.html' %}
         </div>
-    </div>
-
-    {% include 'main/agent_chat/loading_indicator.html' %}
+        {% include 'main/agent_chat/loading_indicator.html' %}
 
     <div class="input-container">
         <div class="input-wrapper">
-            <textarea id="messageInput" placeholder="Ask me about chronobiotics..." rows="1"></textarea>
+            <textarea data-i18n-placeholder="placeholder" id="messageInput" placeholder="Ask me about chronobiotics..."
+                      rows="1"></textarea>
             <div class="input-actions">
                 {% include 'main/agent_chat/file_upload.html' %}
                 {% include 'main/agent_chat/voice_interface.html' %}
                 {% include 'main/agent_chat/language_selector.html' %}
-                <button class="send-btn" id="sendBtn">➤</button>
+                <button class="send-btn" id="sendBtn">
+                    <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18">
+                        <line x1="22" x2="11" y1="2" y2="13"/>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                    </svg>
+                </button>
             </div>
         </div>
-        <input id="fileInput" multiple style="display:none" type="file">
-        <div class="upload-progress" id="uploadProgress" style="display:none">
-            <div id="uploadStatus">Uploading...</div>
-            <div class="upload-bar" id="uploadBar"></div>
+        <div class="message-edit-panel" id="editPanel" style="display: none;">
+            <input class="edit-input" id="editInput" type="text">
+            <button id="saveEditBtn">Save</button>
+            <button id="cancelEditBtn">Cancel</button>
         </div>
     </div>
+    </div>
 
+
+    {% include 'main/agent_chat/search_results.html' %}
     {% include 'main/agent_chat/citation_display.html' %}
     {% include 'main/agent_chat/audio_message.html' %}
 </main>

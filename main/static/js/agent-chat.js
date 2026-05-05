@@ -8,24 +8,42 @@ class AgentChat {
         this.sendBtn = document.getElementById('sendBtn');
         this.newChatBtn = document.getElementById('newChatBtn');
         this.clearHistoryBtn = document.getElementById('clearHistoryBtn');
+        this.exportChatBtn = document.getElementById('exportChatBtn');
         this.messagesContainer = document.getElementById('messages');
         this.typingIndicator = document.getElementById('typingIndicator');
-        this.currentModel = localStorage.getItem('selectedModel') || 'bloom';
+        this.editPanel = document.getElementById('editPanel');
+        this.editInput = document.getElementById('editInput');
+        this.saveEditBtn = document.getElementById('saveEditBtn');
+        this.cancelEditBtn = document.getElementById('cancelEditBtn');
+        this.currentEditId = null;
+        this.isLoading = false;
         this.init();
     }
 
     init() {
         console.log('AgentChat initializing...');
         this.setupEventListeners();
-        this.setupSuggestions();
-        this.loadSettings();
         this.loadHistory();
-        this.initModelSelector();
+        this.setupSuggestions();
+        this.initMobileMenu();
+        this.loadSettings();
     }
 
     setupEventListeners() {
         if (this.sendBtn) {
             this.sendBtn.addEventListener('click', () => this.sendMessage());
+        }
+
+        if (this.newChatBtn) {
+            this.newChatBtn.addEventListener('click', () => this.newChat());
+        }
+
+        if (this.clearHistoryBtn) {
+            this.clearHistoryBtn.addEventListener('click', () => this.clearHistory());
+        }
+
+        if (this.exportChatBtn) {
+            this.exportChatBtn.addEventListener('click', () => this.exportChat());
         }
 
         if (this.messageInput) {
@@ -38,132 +56,65 @@ class AgentChat {
 
             this.messageInput.addEventListener('input', () => {
                 this.messageInput.style.height = 'auto';
-                this.messageInput.style.height = Math.min(this.messageInput.scrollHeight, 100) + 'px';
+                this.messageInput.style.height = Math.min(this.messageInput.scrollHeight, 120) + 'px';
             });
         }
 
-        if (this.newChatBtn) {
-            this.newChatBtn.addEventListener('click', () => this.newChat());
+        if (this.saveEditBtn) {
+            this.saveEditBtn.addEventListener('click', () => this.saveEdit());
         }
 
-        if (this.clearHistoryBtn) {
-            this.clearHistoryBtn.addEventListener('click', () => this.clearHistory());
+        if (this.cancelEditBtn) {
+            this.cancelEditBtn.addEventListener('click', () => this.hideEditPanel());
         }
 
-        // Settings toggle
-        const settingsBtn = document.getElementById('settingsToggleBtn');
-        const settingsPanel = document.getElementById('settingsPanel');
-        if (settingsBtn && settingsPanel) {
-            settingsBtn.addEventListener('click', () => {
-                settingsPanel.style.display = settingsPanel.style.display === 'none' ? 'block' : 'none';
-            });
-        }
-
-        // Language button
-        const langBtn = document.getElementById('langBtn');
-        const langDropdown = document.getElementById('langDropdown');
-        if (langBtn && langDropdown) {
-            langBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                langDropdown.style.display = langDropdown.style.display === 'none' ? 'block' : 'none';
-            });
-
-            document.querySelectorAll('#langDropdown div').forEach(div => {
-                div.addEventListener('click', () => {
-                    const lang = div.dataset.lang;
-                    if (window.langSwitcher) {
-                        window.langSwitcher.setLanguage(lang);
-                    }
-                    langDropdown.style.display = 'none';
-                });
-            });
-
-            document.addEventListener('click', () => {
-                langDropdown.style.display = 'none';
-            });
-        }
-
-        // Save settings
-        const agentType = document.getElementById('agentTypeSelect');
-        const citationStyle = document.getElementById('citationStyleSelect');
-        const streamToggle = document.getElementById('streamToggle');
-        const citationsToggle = document.getElementById('citationsToggle');
-        const tempSlider = document.getElementById('temperatureSlider');
-        const tempValue = document.getElementById('tempValue');
-
-        if (agentType) {
-            const saved = localStorage.getItem('agentType');
-            if (saved) agentType.value = saved;
-            agentType.addEventListener('change', () => {
-                localStorage.setItem('agentType', agentType.value);
-            });
-        }
-
-        if (citationStyle) {
-            const saved = localStorage.getItem('citationStyle');
-            if (saved) citationStyle.value = saved;
-            citationStyle.addEventListener('change', () => {
-                localStorage.setItem('citationStyle', citationStyle.value);
-                if (window.citationManager) {
-                    window.citationManager.setStyle(citationStyle.value);
-                }
-            });
-        }
-
-        if (tempSlider && tempValue) {
-            const saved = localStorage.getItem('temperature');
-            if (saved) tempSlider.value = saved;
-            tempValue.textContent = tempSlider.value;
-            tempSlider.addEventListener('input', (e) => {
-                tempValue.textContent = e.target.value;
-                localStorage.setItem('temperature', e.target.value);
-            });
-        }
-
-        if (streamToggle) {
-            streamToggle.checked = localStorage.getItem('streamResponse') !== 'false';
-            streamToggle.addEventListener('change', () => {
-                localStorage.setItem('streamResponse', streamToggle.checked);
-            });
-        }
-
-        if (citationsToggle) {
-            citationsToggle.checked = localStorage.getItem('showCitations') !== 'false';
-            citationsToggle.addEventListener('change', () => {
-                localStorage.setItem('showCitations', citationsToggle.checked);
+        const modelSelect = document.getElementById('modelSelect');
+        if (modelSelect) {
+            const savedModel = localStorage.getItem('selectedModel');
+            if (savedModel) modelSelect.value = savedModel;
+            modelSelect.addEventListener('change', () => {
+                localStorage.setItem('selectedModel', modelSelect.value);
+                this.showToast(`Switched to ${modelSelect.options[modelSelect.selectedIndex].text}`);
             });
         }
     }
 
-    initModelSelector() {
-        const modelSelect = document.getElementById('modelSelect');
-        if (modelSelect) {
-            const saved = localStorage.getItem('selectedModel');
-            if (saved) modelSelect.value = saved;
-            modelSelect.addEventListener('change', () => {
-                this.currentModel = modelSelect.value;
-                localStorage.setItem('selectedModel', this.currentModel);
-                this.showToast(`Switched to ${modelSelect.options[modelSelect.selectedIndex].text}`);
+    initMobileMenu() {
+        const mobileBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.getElementById('chatSidebar');
+        if (mobileBtn && sidebar) {
+            mobileBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
             });
         }
     }
 
     setupSuggestions() {
         document.querySelectorAll('.suggestion').forEach(btn => {
-            btn.removeEventListener('click', this.suggestionHandler);
-            this.suggestionHandler = () => {
-                this.messageInput.value = btn.textContent;
-                this.sendMessage();
-            };
-            btn.addEventListener('click', this.suggestionHandler);
+            btn.addEventListener('click', () => {
+                if (this.messageInput) {
+                    this.messageInput.value = btn.textContent;
+                    this.sendMessage();
+                }
+            });
         });
     }
 
     loadSettings() {
-        // Settings loaded in event listeners
+        const streamToggle = document.getElementById('streamToggle');
+        if (streamToggle) {
+            streamToggle.checked = localStorage.getItem('streamResponse') !== 'false';
+        }
+
+        const citationsToggle = document.getElementById('citationsToggle');
+        if (citationsToggle) {
+            citationsToggle.checked = localStorage.getItem('showCitations') !== 'false';
+        }
     }
 
     async sendMessage() {
+        if (this.isLoading) return;
+
         const message = this.messageInput.value.trim();
         if (!message) return;
 
@@ -171,72 +122,109 @@ class AgentChat {
         this.messageInput.value = '';
         this.messageInput.style.height = 'auto';
         this.showTyping();
+        this.isLoading = true;
 
         try {
             const useStream = localStorage.getItem('streamResponse') !== 'false';
-            const model = this.currentModel;
-            const temperature = parseFloat(localStorage.getItem('temperature') || '0.7');
-            const agentType = localStorage.getItem('agentType') || 'assistant';
 
             if (useStream && window.chatStreaming) {
-                await window.chatStreaming.stream(message, model, temperature, agentType);
+                await window.chatStreaming.stream(message);
             } else {
-                const response = await fetch('/api/chat/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': this.getCookie('csrftoken')
-                    },
-                    body: JSON.stringify({
-                        message: message,
-                        model: model,
-                        temperature: temperature,
-                        agent_type: agentType
-                    })
-                });
-                const data = await response.json();
-                this.hideTyping();
-
-                if (data.success) {
-                    this.addMessage('assistant', data.response);
-                    if (data.citations && data.citations.length > 0 && localStorage.getItem('showCitations') !== 'false') {
-                        if (window.citationManager) {
-                            window.citationManager.show(data.citations);
-                        }
-                    }
-                } else {
-                    this.addMessage('assistant', 'Sorry, an error occurred. Please try again.');
-                }
+                const response = await this.callAPI(message);
+                this.addMessage('assistant', response);
             }
         } catch (error) {
-            console.error('Error:', error);
-            this.hideTyping();
-            this.addMessage('assistant', 'Network error. Please check your connection.');
+            console.error('Send message error:', error);
+            // Fallback response when API is not available
+            const fallbackResponse = this.getFallbackResponse(message);
+            this.addMessage('assistant', fallbackResponse);
         }
 
+        this.hideTyping();
+        this.isLoading = false;
         this.saveToHistory();
+        this.updateHistoryList();
     }
 
-    addMessage(role, content) {
+    getFallbackResponse(message) {
+        const msg = message.toLowerCase();
+        if (msg.includes('chronobiotic')) {
+            return "**Chronobiotics** are pharmacological agents that modify circadian rhythm parameters. They include natural compounds like melatonin, synthetic modulators like KL001 and KS15.";
+        } else if (msg.includes('melatonin')) {
+            return "**Melatonin** is a hormone produced by the pineal gland that regulates the sleep-wake cycle. It acts on MT1 and MT2 receptors.";
+        } else {
+            return "I'm ChronobioticsAI! I can help with chronobiotics, circadian rhythms, and research. Try asking about melatonin, KL001, or chronobiotics classification.";
+        }
+    }
+
+    async callAPI(message) {
+        try {
+            const response = await fetch('/api/chat/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': this.getCookie('csrftoken')
+                },
+                body: JSON.stringify({ message: message })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.citations && data.citations.length > 0 && localStorage.getItem('showCitations') !== 'false') {
+                if (window.citationManager) {
+                    window.citationManager.show(data.citations);
+                }
+            }
+
+            return data.response || this.getFallbackResponse(message);
+        } catch (error) {
+            console.error('API call error:', error);
+            return this.getFallbackResponse(message);
+        }
+    }
+
+    addMessage(role, content, customId = null) {
+        const messageId = customId || Date.now().toString();
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${role}`;
+        messageDiv.dataset.messageId = messageId;
 
-        let formatted = content.replace(/\n/g, '<br>');
+        let formatted = this.escapeHtml(content);
+        formatted = formatted.replace(/\n/g, '<br>');
         formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         formatted = formatted.replace(/`(.*?)`/g, '<code>$1</code>');
 
+        const avatar = role === 'user' ? 'You' : 'AI';
+        const time = new Date().toLocaleTimeString();
+
         messageDiv.innerHTML = `
-            <div class="message-avatar">${role === 'user' ? 'You' : 'AI'}</div>
+            <div class="message-avatar">${avatar}</div>
             <div class="message-content">
                 <div class="message-text">${formatted}</div>
-                <div class="message-time">${new Date().toLocaleTimeString()}</div>
+                <div class="message-time">${time}</div>
                 <div class="message-actions">
-                    <button class="copy-msg">📋 Copy</button>
-                    ${role === 'assistant' ? '<button class="speak-msg">🔊 Listen</button>' : ''}
+                    <button class="copy-msg" title="Copy">📋 Copy</button>
+                    ${role === 'user' ? '<button class="edit-msg" title="Edit">✏️ Edit</button>' : ''}
+                    ${role === 'assistant' ? '<button class="speak-msg" title="Listen">🔊 Listen</button><button class="regenerate-msg" title="Regenerate">🔄 Regenerate</button>' : ''}
                 </div>
             </div>
         `;
 
+        this.addMessageEventListeners(messageDiv, role, content);
+        this.messagesContainer.appendChild(messageDiv);
+
+        if (localStorage.getItem('autoScroll') !== 'false') {
+            this.scrollToBottom();
+        }
+
+        return messageId;
+    }
+
+    addMessageEventListeners(messageDiv, role, content) {
         const copyBtn = messageDiv.querySelector('.copy-msg');
         if (copyBtn) {
             copyBtn.addEventListener('click', () => {
@@ -245,26 +233,118 @@ class AgentChat {
             });
         }
 
-        const speakBtn = messageDiv.querySelector('.speak-msg');
-        if (speakBtn) {
-            speakBtn.addEventListener('click', () => {
-                const utterance = new SpeechSynthesisUtterance(content);
-                utterance.lang = 'en-US';
-                utterance.rate = 1;
-                window.speechSynthesis.cancel();
-                window.speechSynthesis.speak(utterance);
-            });
+        if (role === 'user') {
+            const editBtn = messageDiv.querySelector('.edit-msg');
+            if (editBtn) {
+                editBtn.addEventListener('click', () => {
+                    this.showEditPanel(messageDiv.dataset.messageId, content);
+                });
+            }
         }
 
-        this.messagesContainer.appendChild(messageDiv);
-        this.scrollToBottom();
+        if (role === 'assistant') {
+            const speakBtn = messageDiv.querySelector('.speak-msg');
+            if (speakBtn && window.voicePlayer) {
+                speakBtn.addEventListener('click', () => {
+                    window.voicePlayer.speak(content);
+                });
+            }
+
+            const regenerateBtn = messageDiv.querySelector('.regenerate-msg');
+            if (regenerateBtn) {
+                regenerateBtn.addEventListener('click', () => {
+                    this.regenerateMessage(messageDiv.dataset.messageId);
+                });
+            }
+        }
+    }
+
+    showEditPanel(messageId, content) {
+        this.currentEditId = messageId;
+        this.currentEditOriginal = content;
+        if (this.editInput) this.editInput.value = content;
+        if (this.editPanel) this.editPanel.style.display = 'flex';
+        this.editInput?.focus();
+    }
+
+    hideEditPanel() {
+        if (this.editPanel) this.editPanel.style.display = 'none';
+        this.currentEditId = null;
+        this.currentEditOriginal = null;
+        if (this.editInput) this.editInput.value = '';
+    }
+
+    saveEdit() {
+        const newContent = this.editInput?.value.trim();
+        if (!newContent || !this.currentEditId) return;
+
+        const messageDiv = this.messagesContainer.querySelector(`[data-message-id="${this.currentEditId}"]`);
+        if (messageDiv) {
+            const textDiv = messageDiv.querySelector('.message-text');
+            if (textDiv) {
+                textDiv.innerHTML = this.formatText(newContent);
+            }
+
+            let nextSibling = messageDiv.nextSibling;
+            while (nextSibling) {
+                const toRemove = nextSibling;
+                nextSibling = nextSibling.nextSibling;
+                if (toRemove.classList && toRemove.classList.contains('message')) {
+                    toRemove.remove();
+                }
+            }
+
+            this.hideEditPanel();
+            this.saveToHistory();
+            this.messageInput.value = newContent;
+            this.sendMessage();
+        }
+    }
+
+    regenerateMessage(messageId) {
+        const messageDiv = this.messagesContainer.querySelector(`[data-message-id="${messageId}"]`);
+        if (messageDiv) {
+            let prev = messageDiv.previousSibling;
+            let userMessage = null;
+            while (prev) {
+                if (prev.classList && prev.classList.contains('user')) {
+                    userMessage = prev;
+                    break;
+                }
+                prev = prev.previousSibling;
+            }
+
+            if (userMessage) {
+                const userText = userMessage.querySelector('.message-text').innerText;
+                let next = messageDiv;
+                while (next) {
+                    const toRemove = next;
+                    next = next.nextSibling;
+                    if (toRemove.classList && toRemove.classList.contains('message')) {
+                        toRemove.remove();
+                    }
+                }
+                this.messageInput.value = userText;
+                this.sendMessage();
+            }
+        }
+    }
+
+    formatText(text) {
+        let formatted = this.escapeHtml(text);
+        formatted = formatted.replace(/\n/g, '<br>');
+        formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        formatted = formatted.replace(/`(.*?)`/g, '<code>$1</code>');
+        return formatted;
     }
 
     showTyping() {
         if (this.typingIndicator) {
             this.typingIndicator.style.display = 'flex';
         }
-        this.scrollToBottom();
+        if (localStorage.getItem('autoScroll') !== 'false') {
+            this.scrollToBottom();
+        }
     }
 
     hideTyping() {
@@ -284,8 +364,8 @@ class AgentChat {
         const messages = [];
         document.querySelectorAll('#messages .message').forEach(msg => {
             const role = msg.classList.contains('user') ? 'user' : 'assistant';
-            const text = msg.querySelector('.message-text').innerText;
-            messages.push({ role, content: text });
+            const content = msg.querySelector('.message-text').innerText;
+            messages.push({ role, content, id: msg.dataset.messageId });
         });
 
         if (messages.length === 0) return;
@@ -313,14 +393,14 @@ class AgentChat {
         const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
 
         if (history.length === 0) {
-            list.innerHTML = '<li class="history-item empty-history">No chats yet</li>';
+            list.innerHTML = '<li class="history-item empty">No chats yet</li>';
             return;
         }
 
         list.innerHTML = history.map(item => `
             <li class="history-item" data-id="${item.id}">
                 <span>💬</span>
-                <span>${this.escapeHtml(item.title)}</span>
+                <span class="history-title">${this.escapeHtml(item.title)}</span>
                 <span class="history-date">${this.formatDate(item.timestamp)}</span>
             </li>
         `).join('');
@@ -328,6 +408,22 @@ class AgentChat {
         list.querySelectorAll('.history-item[data-id]').forEach(item => {
             item.addEventListener('click', () => this.loadChat(item.dataset.id));
         });
+
+        const searchInput = document.getElementById('historySearch');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                const items = list.querySelectorAll('.history-item[data-id]');
+                items.forEach(item => {
+                    const title = item.querySelector('.history-title')?.innerText.toLowerCase() || '';
+                    if (title.includes(query)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        }
     }
 
     loadChat(id) {
@@ -337,7 +433,7 @@ class AgentChat {
         if (chat && chat.messages) {
             this.messagesContainer.innerHTML = '';
             chat.messages.forEach(msg => {
-                this.addMessage(msg.role, msg.content);
+                this.addMessage(msg.role, msg.content, msg.id);
             });
 
             document.querySelectorAll('.history-item').forEach(item => {
@@ -351,7 +447,6 @@ class AgentChat {
         const date = new Date(timestamp);
         const now = new Date();
         const diff = now - date;
-
         if (diff < 3600000) return 'Just now';
         if (diff < 86400000) return 'Today';
         if (diff < 172800000) return 'Yesterday';
@@ -361,7 +456,7 @@ class AgentChat {
     newChat() {
         this.messagesContainer.innerHTML = '';
         const welcomeMsg = `
-            <div class="message assistant">
+            <div class="message assistant welcome-message">
                 <div class="message-avatar">AI</div>
                 <div class="message-content">
                     <div class="message-text">
@@ -380,10 +475,12 @@ class AgentChat {
         this.messagesContainer.innerHTML = welcomeMsg;
         this.setupSuggestions();
         this.saveToHistory();
+        this.updateHistoryList();
+        this.showToast('New conversation started!');
     }
 
     clearHistory() {
-        if (confirm('Clear all chat history?')) {
+        if (confirm('Clear all chat history? This cannot be undone.')) {
             localStorage.removeItem('chatHistory');
             this.newChat();
             this.updateHistoryList();
@@ -391,7 +488,32 @@ class AgentChat {
         }
     }
 
-    showToast(message) {
+    exportChat() {
+        const messages = [];
+        document.querySelectorAll('#messages .message').forEach(msg => {
+            const role = msg.classList.contains('user') ? 'User' : 'AI Assistant';
+            const content = msg.querySelector('.message-text').innerText;
+            const time = msg.querySelector('.message-time')?.innerText || '';
+            messages.push(`[${role}] ${time}\n${content}\n${'-'.repeat(50)}\n`);
+        });
+
+        if (messages.length === 0) {
+            this.showToast('No messages to export');
+            return;
+        }
+
+        const exportText = `Chronobiotics Chat Export\n${'='.repeat(50)}\n\n${messages.join('\n')}\nExported: ${new Date().toLocaleString()}`;
+        const blob = new Blob([exportText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `chat_export_${new Date().toISOString().slice(0, 19)}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+        this.showToast('Chat exported!');
+    }
+
+    showToast(message, bg = '#333') {
         const toast = document.createElement('div');
         toast.textContent = message;
         toast.style.cssText = `
@@ -399,12 +521,13 @@ class AgentChat {
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: #333;
+            background: ${bg};
             color: white;
             padding: 8px 16px;
             border-radius: 8px;
             z-index: 10000;
             font-size: 13px;
+            animation: fadeOut 2s ease forwards;
         `;
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 2000);
@@ -432,7 +555,6 @@ class AgentChat {
     }
 }
 
-// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     window.agentChat = new AgentChat();
 });

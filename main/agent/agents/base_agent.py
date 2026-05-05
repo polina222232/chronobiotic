@@ -1,2 +1,5 @@
-class BaseAgent:
-    def __init__(self):
+"""
+Base Agent Implementation
+Extends the core agent with Chronobiotics-specific functionality
+"""
+"

@@ -1,4 +1,4 @@
-/* Message Bubbles */
+
 .message {
     display: flex;
     gap: 12px;
@@ -9,6 +9,10 @@
 .message.user {
     flex-direction: row-reverse;
 }
+
+/* ============================================
+   Message Avatar
+   ============================================ */
 
 .message-avatar {
     width: 36px;
@@ -28,6 +32,10 @@
     background: #8e9aaf;
 }
 
+/* ============================================
+   Message Content
+   ============================================ */
+
 .message-content {
     max-width: 70%;
 }
@@ -36,6 +44,10 @@
     text-align: right;
 }
 
+/* ============================================
+   Message Text
+   ============================================ */
+
 .message-text {
     background: #f8fafc;
     padding: 12px 16px;
@@ -43,6 +55,7 @@
     line-height: 1.5;
     font-size: 14px;
     color: #2c3e50;
+    word-wrap: break-word;
 }
 
 .message.user .message-text {
@@ -50,27 +63,44 @@
     color: white;
 }
 
-.message-text h1, .message-text h2, .message-text h3 {
-    margin-top: 0;
-    margin-bottom: 8px;
-    font-size: 1.1rem;
+/* Headers in messages */
+.message-text h1 {
+    font-size: 1.5rem;
+    margin: 0 0 8px 0;
+}
+
+.message-text h2 {
+    font-size: 1.3rem;
+    margin: 0 0 8px 0;
 }
 
 .message-text h3 {
-    font-size: 1rem;
+    font-size: 1.1rem;
+    margin: 0 0 8px 0;
 }
 
 .message-text p {
     margin: 0 0 8px 0;
 }
 
-.message-text ul, .message-text ol {
+.message-text p:last-child {
+    margin-bottom: 0;
+}
+
+/* Lists in messages */
+.message-text ul,
+.message-text ol {
     margin: 8px 0;
     padding-left: 20px;
 }
 
+.message-text li {
+    margin-bottom: 4px;
+}
+
+/* Code blocks */
 .message-text code {
-    background: rgba(0,0,0,0.05);
+    background: rgba(0, 0, 0, 0.05);
     padding: 2px 6px;
     border-radius: 4px;
     font-size: 12px;
@@ -83,21 +113,67 @@
     border-radius: 8px;
     overflow-x: auto;
     font-size: 12px;
+    margin: 8px 0;
 }
 
-.message.user .message-text code {
-    background: rgba(255,255,255,0.2);
+.message-text pre code {
+    background: none;
+    padding: 0;
 }
 
-.message.user .message-text pre {
-    background: rgba(255,255,255,0.1);
+/* Links */
+.message-text a {
+    color: #667eea;
+    text-decoration: none;
 }
+
+.message-text a:hover {
+    text-decoration: underline;
+}
+
+.message.user .message-text a {
+    color: #a8c4ff;
+}
+
+/* Blockquotes */
+.message-text blockquote {
+    border-left: 3px solid #d0d7de;
+    margin: 8px 0;
+    padding-left: 12px;
+    color: #666;
+}
+
+/* Tables */
+.message-text table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 8px 0;
+}
+
+.message-text th,
+.message-text td {
+    border: 1px solid #d0d7de;
+    padding: 6px 10px;
+    text-align: left;
+}
+
+.message-text th {
+    background: #f0f4f8;
+}
+
+/* ============================================
+   Message Time
+   ============================================ */
 
 .message-time {
     font-size: 11px;
     color: #8e9aaf;
     margin-top: 4px;
 }
+
+/* ============================================
+   Message Actions
+   ============================================ */
 
 .message-actions {
     display: flex;
@@ -119,6 +195,7 @@
     border-radius: 4px;
     color: #8e9aaf;
     font-size: 12px;
+    transition: all 0.2s;
 }
 
 .message-actions button:hover {
@@ -126,7 +203,15 @@
     color: #2c3e50;
 }
 
-/* Suggestions */
+.message.user .message-actions button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+/* ============================================
+   Suggestions
+   ============================================ */
+
 .suggestions {
     display: flex;
     flex-wrap: wrap;
@@ -142,6 +227,7 @@
     font-size: 12px;
     cursor: pointer;
     transition: all 0.2s;
+    color: #2c3e50;
 }
 
 .suggestion:hover {
@@ -150,7 +236,10 @@
     color: white;
 }
 
-/* Spinner */
+/* ============================================
+   Spinner / Loading
+   ============================================ */
+
 .spinner {
     display: inline-block;
     width: 14px;
@@ -163,8 +252,22 @@
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
+
+/* ============================================
+   Welcome Message
+   ============================================ */
+
+.welcome-message .message-text {
+    background: linear-gradient(135deg, #f8fafc 0%, #f0f4f8 100%);
+}
+
+/* ============================================
+   Animations
+   ============================================ */
 
 @keyframes fadeIn {
     from {
@@ -174,5 +277,53 @@
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media (max-width: 768px) {
+    .message-content {
+        max-width: 85%;
+    }
+
+    .message-text {
+        font-size: 13px;
+        padding: 10px 14px;
+    }
+
+    .message-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 11px;
+    }
+
+    .suggestions {
+        gap: 6px;
+    }
+
+    .suggestion {
+        font-size: 11px;
+        padding: 4px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .message-text {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+
+    .message-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 10px;
+    }
+
+    .message-actions button {
+        padding: 2px 6px;
+        font-size: 10px;
     }
 }

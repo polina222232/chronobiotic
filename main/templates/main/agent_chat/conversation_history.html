@@ -1,16 +1,30 @@
-<div class="conversation-history">
-    <div class="history-header">📋 Recent chats</div>
-    <ul class="history-list" id="historyList"></ul>
+<div class="model-selector">
+    <div class="model-header">
+        <svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14">
+            <path d="M12 2a10 10 0 1 0 10 10 10 10 0 0 0-10-10z"/>
+            <path d="M12 6v6l4 2"/>
+        </svg>
+        <span>AI Model</span>
+    </div>
+    <select class="model-select" id="modelSelect">
+        <optgroup label="Text Models">
+            <option value="bloom">BLOOM (Default)</option>
+            <option value="gpt4">GPT-4</option>
+            <option value="claude">Claude 3</option>
+            <option value="llama">LLaMA 3</option>
+            <option value="mistral">Mistral</option>
+            <option value="gemini">Gemini Pro</option>
+        </optgroup>
+        <optgroup label="Vision Models">
+            <option value="gpt4v">GPT-4 Vision</option>
+            <option value="claude3v">Claude 3 Vision</option>
+            <option value="gemini-vision">Gemini Vision</option>
+        </optgroup>
+        <optgroup label="Chemistry Models">
+            <option value="chemberta">ChemBERTa</option>
+            <option value="molfm">MolFM</option>
+            <option value="megan">MEGAN</option>
+            <option value="grover">Grover</option>
+        </optgroup>
+    </select>
 </div>
-
-<style>
-    .conversation-history { padding:0 16px; }
-    .history-header { font-size:12px; color:#8e9aaf; margin-bottom:12px; }
-    .history-list { list-style:none; margin:0; padding:0; }
-    .history-item { display:flex; align-items:center; gap:10px; padding:10px; margin-bottom:4px; border-radius:8px; cursor:pointer; font-size:13px; color:#2c3e50; }
-    .history-item:hover { background:#f0f4f8; }
-    .history-item.active { background:#e8f0fe; }
-    .history-item span:first-child { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .history-date { font-size:10px; color:#8e9aaf; }
-    .empty-history { text-align:center; color:#8e9aaf; padding:20px; }
-</style>

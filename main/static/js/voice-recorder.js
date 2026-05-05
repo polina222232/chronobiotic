@@ -2,86 +2,172 @@
  * Voice Recorder - Speech recognition with 9 language support
  */
 
-class VoiceRecorder {
-    constructor() {
-        this.mediaRecorder = null;
-        this.audioChunks = [];
-        this.isRecording = false;
-        this.stream = null;
+(function() {
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
+    let stream = null;
+    let recognition = null;
 
-        this.recordBtn = document.getElementById('voiceBtn');
-        this.init();
-    }
+    const recordBtn = document.getElementById('voiceBtn');
+    const voiceWave = document.getElementById('voiceWave');
+    const voiceStatus = document.getElementById('voiceStatus');
 
-    init() {
-        console.log('VoiceRecorder initializing...');
+    // Инициализация распознавания речи
+    function initSpeechRecognition() {
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.maxAlternatives = 1;
 
-        if (this.recordBtn) {
-            this.recordBtn.addEventListener('click', () => this.toggleRecording());
-        } else {
-            console.error('Voice button not found!');
-        }
-    }
+            recognition.onresult = function(event) {
+                let finalTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    }
+                }
 
-    async toggleRecording() {
-        if (this.isRecording) {
-            this.stopRecording();
-        } else {
-            await this.startRecording();
-        }
-    }
-
-    async startRecording() {
-        try {
-            this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            this.mediaRecorder = new MediaRecorder(this.stream);
-            this.audioChunks = [];
-
-            this.mediaRecorder.ondataavailable = (event) => {
-                if (event.data.size > 0) {
-                    this.audioChunks.push(event.data);
+                if (finalTranscript) {
+                    const input = document.getElementById('messageInput');
+                    if (input) {
+                        input.value = finalTranscript;
+                        stopRecording();
+                        setTimeout(() => {
+                            const sendBtn = document.getElementById('sendBtn');
+                            if (sendBtn) sendBtn.click();
+                        }, 300);
+                    }
                 }
             };
 
-            this.mediaRecorder.onstop = () => {
-                this.processRecording();
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+                setStatus('Error: ' + event.error, '#dc3545');
+                stopRecording();
             };
 
-            this.mediaRecorder.start();
-            this.isRecording = true;
+            recognition.onend = function() {
+                isRecording = false;
+                if (recordBtn) recordBtn.classList.remove('recording');
+                showWave(false);
+                setStatus('', '');
+            };
 
-            this.recordBtn.classList.add('recording');
-            this.showWaveAnimation();
-            this.showStatus('Recording... Speak now', '#dc3545');
+            console.log('Speech recognition initialized');
+            return true;
+        } else {
+            console.warn('Speech recognition not supported');
+            return false;
+        }
+    }
 
-            setTimeout(() => this.stopRecording(), 30000);
+    function showWave(show) {
+        if (voiceWave) {
+            voiceWave.style.display = show ? 'flex' : 'none';
+        }
+    }
+
+    function setStatus(message, color) {
+        if (voiceStatus) {
+            voiceStatus.textContent = message;
+            voiceStatus.style.color = color;
+            if (!message) {
+                voiceStatus.style.display = 'none';
+            } else {
+                voiceStatus.style.display = 'block';
+                setTimeout(() => {
+                    if (voiceStatus.textContent === message) {
+                        voiceStatus.textContent = '';
+                        voiceStatus.style.display = 'none';
+                    }
+                }, 2000);
+            }
+        }
+    }
+
+    async function startRecording() {
+        try {
+            // Обновляем язык для распознавания
+            const currentLang = localStorage.getItem('language') || 'en';
+            const langMap = {
+                'en': 'en-US', 'ru': 'ru-RU', 'es': 'es-ES', 'fr': 'fr-FR',
+                'zh': 'zh-CN', 'it': 'it-IT', 'ko': 'ko-KR', 'de': 'de-DE', 'hi': 'hi-IN'
+            };
+
+            if (recognition) {
+                recognition.lang = langMap[currentLang] || 'en-US';
+                recognition.start();
+                isRecording = true;
+                if (recordBtn) recordBtn.classList.add('recording');
+                showWave(true);
+                setStatus('Recording... Speak now', '#dc3545');
+
+                // Авто-остановка через 15 секунд
+                setTimeout(() => {
+                    if (isRecording) stopRecording();
+                }, 15000);
+            } else {
+                // Fallback к MediaRecorder API
+                stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = function(event) {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+
+                mediaRecorder.onstop = function() {
+                    processRecording();
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                if (recordBtn) recordBtn.classList.add('recording');
+                showWave(true);
+                setStatus('Recording... Speak now', '#dc3545');
+
+                setTimeout(() => {
+                    if (isRecording) stopRecording();
+                }, 15000);
+            }
         } catch (error) {
             console.error('Microphone error:', error);
-            this.showStatus('Microphone error', '#dc3545');
+            setStatus('Microphone error', '#dc3545');
         }
     }
 
-    stopRecording() {
-        if (this.mediaRecorder && this.isRecording) {
-            this.mediaRecorder.stop();
-            this.isRecording = false;
+    function stopRecording() {
+        if (recognition && isRecording) {
+            recognition.stop();
+        }
 
-            if (this.stream) {
-                this.stream.getTracks().forEach(track => track.stop());
+        if (mediaRecorder && isRecording) {
+            mediaRecorder.stop();
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
             }
+        }
 
-            this.recordBtn.classList.remove('recording');
-            this.hideWaveAnimation();
-            this.showStatus('Processing...', '#ffc107');
+        isRecording = false;
+        if (recordBtn) recordBtn.classList.remove('recording');
+        showWave(false);
+
+        if (!recognition) {
+            setStatus('Processing...', '#ffc107');
         }
     }
 
-    processRecording() {
-        const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
-        this.transcribeAudio(audioBlob);
+    function processRecording() {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        transcribeAudio(audioBlob);
     }
 
-    async transcribeAudio(blob) {
+    async function transcribeAudio(blob) {
         const currentLang = localStorage.getItem('language') || 'en';
 
         const transcripts = {
@@ -100,8 +186,7 @@ class VoiceRecorder {
             es: [
                 "¿Qué son los cronobióticos?",
                 "Háblame de la melatonina y sus efectos.",
-                "¿Cómo funcionan KL001 y KS15?",
-                "¿Qué cronobióticos están aprobados por la FDA?"
+                "¿Cómo funcionan KL001 y KS15?"
             ],
             fr: [
                 "Quels sont les principaux types de chronobiotiques?",
@@ -143,54 +228,46 @@ class VoiceRecorder {
         const input = document.getElementById('messageInput');
         if (input) {
             input.value = transcript;
-            this.showStatus('Ready', '#28a745');
+            setStatus('Ready', '#28a745');
             setTimeout(() => {
-                document.getElementById('sendBtn')?.click();
+                const sendBtn = document.getElementById('sendBtn');
+                if (sendBtn) sendBtn.click();
             }, 300);
         }
     }
 
-    showWaveAnimation() {
-        let waveContainer = document.getElementById('voiceWave');
-        if (waveContainer) waveContainer.remove();
-
-        waveContainer = document.createElement('div');
-        waveContainer.className = 'voice-wave';
-        waveContainer.id = 'voiceWave';
-        waveContainer.innerHTML = '<span></span><span></span><span></span><span></span><span></span>';
-
-        if (this.recordBtn && this.recordBtn.parentNode) {
-            this.recordBtn.parentNode.insertBefore(waveContainer, this.recordBtn.nextSibling);
+    function toggleRecording() {
+        console.log('Voice button clicked, isRecording:', isRecording);
+        if (isRecording) {
+            stopRecording();
+        } else {
+            startRecording();
         }
     }
 
-    hideWaveAnimation() {
-        const wave = document.getElementById('voiceWave');
-        if (wave) wave.remove();
-    }
+    // Инициализация при загрузке DOM
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('VoiceRecorder initializing...');
+        console.log('Voice button element:', recordBtn);
 
-    showStatus(message, color) {
-        let statusDiv = document.getElementById('voiceStatus');
-        if (!statusDiv) {
-            statusDiv = document.createElement('div');
-            statusDiv.id = 'voiceStatus';
-            statusDiv.style.cssText = 'font-size: 11px; margin-left: 8px;';
-            if (this.recordBtn && this.recordBtn.parentNode) {
-                this.recordBtn.parentNode.appendChild(statusDiv);
-            }
+        if (recordBtn) {
+            // Инициализируем распознавание речи
+            initSpeechRecognition();
+
+            // Удаляем старые обработчики и добавляем новый
+            const newRecordBtn = recordBtn.cloneNode(true);
+            recordBtn.parentNode.replaceChild(newRecordBtn, recordBtn);
+
+            newRecordBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Voice button clicked!');
+                toggleRecording();
+            });
+
+            console.log('Voice button initialized');
+        } else {
+            console.error('Voice button not found!');
         }
-        statusDiv.textContent = message;
-        statusDiv.style.color = color;
-
-        setTimeout(() => {
-            if (statusDiv.textContent === message) {
-                statusDiv.textContent = '';
-            }
-        }, 2000);
-    }
-}
-
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    window.voiceRecorder = new VoiceRecorder();
-});
+    });
+})();

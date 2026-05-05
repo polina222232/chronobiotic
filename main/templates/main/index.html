@@ -1,365 +1,181 @@
-{% extends 'main/base.html' %}
+{{% extends 'main/base.html' %}
 {% load static %}
 {% block title %}Chronobiotics{% endblock %}
 
-{% block extra_css %}
-<link href="{% static 'css/simple-modal.css' %}" rel="stylesheet">
-<style>
-    .table-responsive-full {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .table {
-        width: 100%;
-        background: white;
-        border-collapse: collapse;
-    }
-
-    .table thead th {
-        color: white;
-        padding: 10px;
-        white-space: nowrap;
-        position: sticky;
-        top: 0;
-    }
-
-    .table td {
-        padding: 8px 10px;
-        border: 1px solid #dee2e6;
-        vertical-align: top;
-    }
-
-    .btn-substance {
-        border: none;
-        padding: 5px 12px;
-        border-radius: 20px;
-        cursor: pointer;
-        white-space: nowrap;
-    }
-
-    .btn-substance:hover {
-        transform: scale(1.02);
-    }
-
-    .smiles-cell {
-        font-family: monospace;
-        font-size: 0.75rem;
-        word-break: break-all;
-        max-width: 250px;
-    }
-
-    .cell-list {
-        margin: 0;
-        padding-left: 18px;
-    }
-
-    .cell-list li {
-        margin-bottom: 3px;
-    }
-
-    .search-wrapper {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin: 20px 0;
-        flex-wrap: wrap;
-    }
-
-    .search-group {
-        display: flex;
-        border-radius: 50px;
-        overflow: hidden;
-    }
-
-    .search-group .form-control {
-        border: none;
-        padding: 10px 20px;
-        width: 300px;
-    }
-
-    .search-btn {
-        border: none;
-        padding: 0 25px;
-        color: white;
-    }
-
-    .ai-btn {
-        border: none;
-        padding: 0 25px;
-        border-radius: 50px;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .ai-btn:hover {
-        transform: translateY(-2px);
-    }
-
-    .scroll-hint {
-        display: none;
-        text-align: center;
-        padding: 5px;
-        border-radius: 20px;
-        margin-bottom: 10px;
-        font-size: 0.7rem;
-    }
-
-    @media (max-width: 1000px) {
-        .scroll-hint {
-            display: block;
-        }
-    }
-
-    .pagination-custom {
-        display: flex;
-        justify-content: center;
-        gap: 5px;
-        flex-wrap: wrap;
-        list-style: none;
-        margin-top: 20px;
-    }
-
-    .pagination-custom .page-link {
-        color: #667eea;
-        padding: 6px 12px;
-        border-radius: 6px;
-        text-decoration: none;
-    }
-
-    .pagination-custom .active .page-link {
-        color: white;
-        border: none;
-    }
-
-    .badge-sm {
-        display: inline-block;
-        padding: 2px 8px;
-        margin: 2px;
-        border-radius: 12px;
-        font-size: 0.7rem;
-    }
-
-    .badge-effect {
-        background: #4facfe;
-        color: white;
-    }
-
-    .badge-target {
-        background: #667eea;
-        color: white;
-    }
-
-    .badge-target a {
-        color: white;
-        text-decoration: none;
-    }
-
-    .badge-mechanism {
-        background: #fa709a;
-        color: white;
-    }
-
-    .badge-article {
-        background: #a8edea;
-        color: #333;
-    }
-
-    .badge-article a {
-        color: #333;
-        text-decoration: none;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
+
 <div class="container text-center">
-    <br><br>
-    <img alt="Logo" src="{% static 'image/chrono.png' %}" style="max-width: 400px; width: 100%;">
-    <h1>List of Chronobiotics</h1>
+    <br>
+    <br>
+    <br>
+    <img alt="Logo" class="rounded mx-auto d-block" height="400" src="{% static 'image/chrono.png' %}" width="800">
+    <h1 class="title"> List of Chronobiotics </h1>
     <br>
 
-    <div class="search-wrapper">
-        <form class="search-group" method="get">
-            <input class="form-control" name="search" placeholder="Search by name, formula, SMILES..."
-                   type="search"
-                   value="{{ query }}">
-            <a class="ai-btn" href="{% url 'agent_chat' %}">
-                <i class="fas fa-robot"></i> AI Assistant
-            </a>
+    <!-- Поисковая строка -->
+    <nav class="navbar navbar-second bg-second">
+        <form class="form-inline" method="get">
+            <input aria-label="Search" class="form-control mr-sm-2" name="search"
+                   placeholder="Insert name, formula, SMILES etc."
+                   type="search" value="{{ query }}">
+
         </form>
-        a>
-    </div>
-
-    {% if query %}
-    <p class="text-muted">Found {{ page_obj.paginator.count }} results for "{{ query }}"</p>
-    {% endif %}
+    </nav>
 </div>
+<br>
 
-<div class="scroll-hint">
-    <i class="fas fa-arrows-alt-h"></i> Scroll horizontally →
-</div>
-
-<div class="table-responsive-full">
-    <table class="table table-bordered">
-        <thead>
+<table class="table table-bordered">
+    <thead>
         <tr>
-            <th>Name</th>
-            <th>SMILES</th>
-            <th>FDA Status</th>
-            <th>Effects</th>
-            <th>Targets</th>
-            <th>Mechanisms</th>
-            <th>Articles</th>
+            <th scope="col">Name</th>
+            <th scope="col">SMILES</th>
+            <th scope="col">FDA Status</th>
+            <th scope="col">Effects</th>
+            <th scope="col">Targets</th>
+            <th scope="col">Mechanisms</th>
+            <th scope="col">Articles</th>
         </tr>
-        </thead>
-        <tbody>
+    </thead>
+    <tbody>
         {% for item in page_obj %}
             <tr>
                 <td>
                     <button type="button"
-                            class="btn-substance"
+                            class="btn btn-second"
                             data-toggle="modal"
                             data-target="#infoModal"
                             data-name="{{ item.gname }}"
                             data-formula="{{ item.molecula }}"
                             data-smiles="{{ item.smiles }}"
-                            data-description="{{ item.description|default:'No description' }}"
+                            data-description="{{ item.description }}"
                             data-linkname="{{ item.linkname }}"
-                            data-fdastatus="{{ item.fdastatus|default:'Pending' }}"
-                            data-image="{% if item.updphoto %}{{ item.updphoto.url }}{% endif %}">
+                            data-image="{{ item.updphoto.url }}">
                         {{ item.gname }}
                     </button>
                 </td>
-                <td class="smiles-cell"><code>{{ item.smiles|default:'—'|truncatechars:60 }}</code></td>
+                <td>{{ item.smiles }}</td>
+                <td>{{ item.fdastatus }}</td>
                 <td>
-                    {% if item.fdastatus %}
-                    {% if 'Approved' in item.fdastatus %}
-                    <span style="background:#28a745; color:white; padding:3px 10px; border-radius:20px;">✅ {{ item.fdastatus }}</span>
-                    {% elif 'Investigational' in item.fdastatus %}
-                    <span style="background:#ffc107; padding:3px 10px; border-radius:20px;">🔬 {{ item.fdastatus }}</span>
-                    {% else %}
-                    <span style="background:#6c757d; color:white; padding:3px 10px; border-radius:20px;">{{ item.fdastatus }}</span>
-                    {% endif %}
-                    {% else %}
-                    <span style="background:#6c757d; color:white; padding:3px 10px; border-radius:20px;">Pending</span>
-                    {% endif %}
+                    {% for effect in item.effect.all %}
+                    {{ effect.Effectname }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
                 </td>
                 <td>
-                    {% for effect in item.effect.all|slice:":3" %}
-                    <span class="badge-sm badge-effect">{{ effect.Effectname|truncatechars:20 }}</span>
-                    {% empty %}—{% endfor %}
+                    {% for target in item.target.all %}
+                    <a class="text-decoration-none" href="{{ target.targeturl }}" target="_blank">
+                        {{ target.targetsname }}
+                    </a>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
                 </td>
                 <td>
-                    {% for target in item.target.all|slice:":2" %}
-                    <span class="badge-sm badge-target">
-                            <a href="{{ target.targeturl }}"
-                               target="_blank">{{ target.targetsname|truncatechars:15 }}</a>
-                        </span>
-                    {% empty %}—{% endfor %}
+                    {% for mechanism in item.mechanisms.all %}
+                    {{ mechanism.mechanismname }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
                 </td>
                 <td>
-                    {% for mechanism in item.mechanisms.all|slice:":2" %}
-                    <span class="badge-sm badge-mechanism">{{ mechanism.mechanismname|truncatechars:20 }}</span>
-                    {% empty %}—{% endfor %}
-                </td>
-                <td>
-                    {% for article in item.articles.all|slice:":2" %}
-                    <span class="badge-sm badge-article">
-                            <a href="{{ article.articleurl }}" target="_blank"><i class="fas fa-file-alt"></i> {{ article.articlename|truncatechars:15 }}</a>
-                        </span>
-                    {% empty %}—{% endfor %}
-                </td>
-            </tr>
-        {% empty %}
-        <tr>
-            <td class="text-center py-5" colspan="7">
-                <i class="fas fa-search fa-3x text-muted"></i>
-                <h4>No results found</h4>
+                    {% for article in item.articles.all %}
+                    <a class="text-decoration-none" href="{{ article.articleurl }}" target="_blank">
+                        {{ article.articlename }}
+                    </a>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
                 </td>
             </tr>
         {% endfor %}
-        </tbody>
-    </table>
-</div>
+    </tbody>
+</table>
 
-<nav>
-    <ul class="pagination-custom">
-        {% if page_obj.has_previous %}
-        <li><a class="page-link" href="?search={{ query }}&page=1"><i class="fas fa-angle-double-left"></i></a></li>
-        <li><a class="page-link" href="?search={{ query }}&page={{ page_obj.previous_page_number }}"><i
-                class="fas fa-angle-left"></i></a></li>
-        {% endif %}
-        <li class="active"><span
-                class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
-        {% if page_obj.has_next %}
-        <li><a class="page-link" href="?search={{ query }}&page={{ page_obj.next_page_number }}"><i
-                class="fas fa-angle-right"></i></a></li>
-        <li><a class="page-link" href="?search={{ query }}&page={{ page_obj.paginator.num_pages }}"><i
-                class="fas fa-angle-double-right"></i></a></li>
-        {% endif %}
-    </ul>
-</nav>
 
 <!-- Модальное окно -->
-<div class="modal fade" id="infoModal" role="dialog" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+<div aria-hidden="true" aria-labelledby="infoModalLabel" class="modal fade" id="infoModal" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"><i class="fas fa-info-circle"></i> Substance Information</h5>
-                <button class="close" data-dismiss="modal" type="button">&times;</button>
+                <h5 class="modal-title" id="infoModalLabel">Information</h5>
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-md-4 text-center">
-                        <img id="modal-image" src="" style="max-width:100%; max-height:180px; object-fit:contain;">
-                        <div class="mt-2">
-                            <button class="btn btn-sm btn-secondary" id="copySmilesBtn">
-                                <i class="fas fa-copy"></i> Copy SMILES
-                            </button>
-                        </div>
+                    <div class="col-md-4">
+                        <img alt="Molecule Image" class="img-fluid mb-3" id="modal-image" src="">
                     </div>
                     <div class="col-md-8">
-                        <h3 id="modal-name"></h3>
-                        <hr>
-                        <div class="info-section">
-                            <h6>Formula</h6>
-                            <p class="chemical-formula" id="modal-formula"></p>
-                        </div>
-                        <div class="info-section">
-                            <h6>SMILES</h6>
-                            <div class="smiles-container">
-                                <code id="modal-smiles"></code>
-                            </div>
-                        </div>
-                        <div class="info-section">
-                            <h6>FDA Status</h6>
-                            <p><span id="modal-fdastatus"></span></p>
-                        </div>
-                        <div class="info-section">
-                            <h6>Synonyms</h6>
-                            <p id="modal-synonyms"></p>
-                        </div>
-                        <div class="info-section">
-                            <h6>Description</h6>
-                            <div class="description-box" id="modal-description"></div>
-                        </div>
+                        <p><strong>Name:</strong> <span id="modal-name"></span></p>
+                        <p><strong>Synonyms:</strong> <span id="modal-synonyms"></span></p>
+                        <p><strong>Formula:</strong> <span id="modal-formula"></span></p>
+                        <p><strong>SMILES:</strong> <span id="modal-smiles"></span></p>
+                        <p><strong>FDA Status:</strong> <span id="modal-fdastatus"></span></p>
+                        <p><strong>Description:</strong> <span id="modal-description"></span></p>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <a id="modal-detail-link" href="#" class="btn btn-primary">See more details</a>
-                <button class="btn btn-success" id="modal-ask-ai" type="button"><i class="fas fa-robot"></i> Ask AI
-                </button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
-<script src="{% static 'js/simple-modal.js' %}"></script>
+<!-- Пагинация -->
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?search={{ query }}&page=1">First</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?search={{ query }}&page={{ page_obj.previous_page_number }}">Previous</a>
+        </li>
+        {% endif %}
+
+        <li class="page-item active">
+            <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        </li>
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?search={{ query }}&page={{ page_obj.next_page_number }}">Next</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?search={{ query }}&page={{ page_obj.paginator.num_pages }}">Last</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+
+<script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script crossorigin="anonymous"
+        src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $('#infoModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var modal = $(this);
+
+        // Основные данные
+        modal.find('#modal-name').text(button.data('name'));
+        modal.find('#modal-formula').text(button.data('formula'));
+        modal.find('#modal-smiles').text(button.data('smiles'));
+        modal.find('#modal-fdastatus').text(button.data('fdastatus'));
+        modal.find('#modal-description').text(button.data('description'));
+        modal.find('#modal-detail-link').attr('href', '/substance/' + button.data('linkname') + '/');
+
+        // Загрузка синонимов через AJAX
+        $.get('/get_synonyms/' + button.data('linkname') + '/', function(data) {
+            var synonyms = data.synonyms.join(', ');
+            modal.find('#modal-synonyms').text(synonyms || 'No synonyms available');
+        });
+
+        // Изображение
+        var imageElement = modal.find('#modal-image');
+        if (button.data('image')) {
+            imageElement.attr('src', button.data('image'));
+            imageElement.show();
+        } else {
+            imageElement.hide();
+        }
+    });
+</script>
+
 {% endblock %}

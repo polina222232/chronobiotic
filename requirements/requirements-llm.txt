@@ -1,0 +1,14 @@
+# Из предыдущего файла
+-r base.txt
+
+# Дополнительные для LLM
+openai==1.51.0
+anthropic==0.34.2
+google-generativeai==0.7.2
+cohere==5.5.8
+langchain==0.3.0
+langchain-community==0.3.0
+tiktoken==0.7.0
+transformers==4.46.0
+torch==2.4.0
+sentence-transformers==3.0.1

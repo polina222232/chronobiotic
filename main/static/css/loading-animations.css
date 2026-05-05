@@ -1,16 +1,27 @@
-/* Loading Animations */
+/* Loading Animations - Typing Indicator and Spinners */
+
+/* ============================================
+   Typing Indicator
+   ============================================ */
+
 .typing-indicator {
-    display: flex;
+    display: none;
     align-items: center;
     gap: 8px;
     padding: 12px 20px;
     background: #f8fafc;
     border-radius: 24px;
-    max-width: 130px;
+    width: fit-content;
     margin: 10px auto;
+    border: 1px solid #e5e8eb;
 }
 
-.typing-indicator span {
+.typing-dots {
+    display: flex;
+    gap: 4px;
+}
+
+.typing-dots span {
     width: 8px;
     height: 8px;
     background: #8e9aaf;
@@ -18,24 +29,21 @@
     animation: bounce 1.4s infinite ease-in-out;
 }
 
-.typing-indicator span:nth-child(1) {
+.typing-dots span:nth-child(1) {
     animation-delay: -0.32s;
 }
 
-.typing-indicator span:nth-child(2) {
+.typing-dots span:nth-child(2) {
     animation-delay: -0.16s;
 }
 
-.typing-indicator span:nth-child(3) {
+.typing-dots span:nth-child(3) {
     animation-delay: 0s;
 }
 
-.typing-indicator span:last-child {
-    width: auto;
-    background: none;
-    color: #4a5568;
+.typing-text {
     font-size: 12px;
-    animation: none;
+    color: #4a5568;
 }
 
 @keyframes bounce {
@@ -49,11 +57,64 @@
     }
 }
 
-/* Skeleton Loading */
+/* ============================================
+   Spinner
+   ============================================ */
+
+.spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #e5e8eb;
+    border-top-color: #2c3e50;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.spinner-sm {
+    width: 12px;
+    height: 12px;
+    border-width: 1.5px;
+}
+
+.spinner-lg {
+    width: 24px;
+    height: 24px;
+    border-width: 3px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ============================================
+   Skeleton Loading
+   ============================================ */
+
 .skeleton {
     background: linear-gradient(90deg, #f0f4f8 25%, #e5e8eb 50%, #f0f4f8 75%);
     background-size: 200% 100%;
     animation: skeleton-loading 1.5s infinite;
+    border-radius: 4px;
+}
+
+.skeleton-text {
+    height: 14px;
+    margin-bottom: 8px;
+}
+
+.skeleton-title {
+    height: 20px;
+    width: 60%;
+    margin-bottom: 12px;
+}
+
+.skeleton-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
 }
 
 @keyframes skeleton-loading {
@@ -65,12 +126,15 @@
     }
 }
 
-/* Pulsing Animation */
+/* ============================================
+   Pulsing Animation
+   ============================================ */
+
 .pulse {
-    animation: pulse 1.5s ease-in-out infinite;
+    animation: pulse-animation 1.5s ease-in-out infinite;
 }
 
-@keyframes pulse {
+@keyframes pulse-animation {
     0%, 100% {
         opacity: 1;
     }
@@ -79,16 +143,113 @@
     }
 }
 
-/* Progress Bar Animation */
+/* ============================================
+   Progress Bar Animation
+   ============================================ */
+
 .progress-bar-animated {
+    background-size: 30px 30px;
+    background-image: linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.15) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.15) 50%,
+        rgba(255, 255, 255, 0.15) 75%,
+        transparent 75%,
+        transparent
+    );
     animation: progress-bar-stripes 1s linear infinite;
 }
 
 @keyframes progress-bar-stripes {
     from {
-        background-position: 1rem 0;
+        background-position: 30px 0;
     }
     to {
         background-position: 0 0;
+    }
+}
+
+/* ============================================
+   Fade Animations
+   ============================================ */
+
+.fade-in {
+    animation: fadeIn 0.3s ease forwards;
+}
+
+.fade-out {
+    animation: fadeOut 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* ============================================
+   Slide Animations
+   ============================================ */
+
+.slide-in-right {
+    animation: slideInRight 0.3s ease forwards;
+}
+
+.slide-out-right {
+    animation: slideOutRight 0.3s ease forwards;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* ============================================
+   Scale Animations
+   ============================================ */
+
+.scale-in {
+    animation: scaleIn 0.2s ease forwards;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
     }
 }

@@ -1,16 +1,9 @@
-<div class="audio-message" id="audioMessage" style="display:none">
+<div class="audio-player" id="audioPlayer" style="display: none;">
     <div class="audio-controls">
-        <button class="audio-play-pause" id="audioPlayPauseBtn">▶</button>
-        <div class="audio-waveform"></div>
-        <div class="audio-time"><span id="currentTime">0:00</span> / <span id="duration">0:00</span></div>
-        <button class="audio-close" id="audioCloseBtn">×</button>
+        <button class="audio-btn" id="audioPlayBtn">▶</button>
+        <div class="audio-waveform" id="audioWaveform"></div>
+        <span id="audioTime">0:00 / 0:00</span>
+        <button class="audio-download" id="audioDownloadBtn">💾</button>
+        <button class="audio-close" id="audioCloseBtn">✕</button>
     </div>
 </div>
-
-<style>
-    .audio-message { position:fixed; bottom:100px; right:20px; background:#2c3e50; color:white; border-radius:20px; padding:8px 16px; z-index:200; }
-    .audio-controls { display:flex; align-items:center; gap:12px; }
-    .audio-play-pause { background:none; border:none; color:white; cursor:pointer; font-size:16px; }
-    .audio-time { font-size:11px; }
-    .audio-close { background:none; border:none; color:white; cursor:pointer; font-size:16px; }
-</style>

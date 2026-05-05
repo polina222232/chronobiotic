@@ -1,5 +1,33 @@
-/* Mobile Responsive */
+/* Responsive Chat - Mobile and Tablet Adaptations */
+
+/* ============================================
+   Tablet Styles (769px - 1024px)
+   ============================================ */
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .chat-sidebar {
+        width: 260px;
+    }
+
+    .messages {
+        max-width: 90%;
+    }
+
+    .citations-panel {
+        width: 400px;
+    }
+}
+
+/* ============================================
+   Mobile Styles (max 768px)
+   ============================================ */
+
 @media (max-width: 768px) {
+    /* Layout */
+    .chat-app {
+        flex-direction: column;
+    }
+
     .chat-sidebar {
         position: fixed;
         left: -280px;
@@ -7,48 +35,72 @@
         height: calc(100vh - 70px);
         z-index: 1000;
         transition: left 0.3s ease;
-        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     }
 
     .chat-sidebar.open {
         left: 0;
     }
 
-    .message-content {
-        max-width: 85%;
+    .chat-main {
+        width: 100%;
     }
 
-    .input-container {
+    /* Header */
+    .chat-header {
         padding: 12px 16px;
-    }
-
-    .citations-panel {
-        width: calc(100% - 20px);
-        right: 10px;
-        left: 10px;
     }
 
     .chat-header h1 {
         font-size: 1rem;
     }
 
-    .model-select {
-        font-size: 11px;
+    /* Messages */
+    .messages-container {
+        padding: 12px;
     }
-}
 
-@media (max-width: 480px) {
+    .messages {
+        max-width: 100%;
+    }
+
+    .message-content {
+        max-width: 85%;
+    }
+
     .message-text {
         font-size: 13px;
-        padding: 8px 12px;
+        padding: 10px 14px;
     }
 
     .message-avatar {
-        width: 28px;
-        height: 28px;
-        font-size: 10px;
+        width: 32px;
+        height: 32px;
+        font-size: 11px;
     }
 
+    /* Input Area */
+    .input-container {
+        padding: 12px 16px;
+    }
+
+    .input-wrapper {
+        padding: 6px 10px;
+    }
+
+    .action-btn,
+    .send-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+
+    #messageInput {
+        font-size: 13px;
+        padding: 6px 4px;
+    }
+
+    /* Suggestions */
     .suggestions {
         gap: 6px;
     }
@@ -58,27 +110,239 @@
         padding: 4px 10px;
     }
 
+    /* Citations */
+    .citations-panel {
+        width: calc(100% - 20px);
+        right: 10px;
+        left: 10px;
+        max-height: 350px;
+    }
+
+    .citations-list {
+        max-height: 250px;
+    }
+
+    /* Settings */
+    .settings-panel {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    /* Language Dropdown */
+    .language-dropdown {
+        left: 10px;
+        right: 10px;
+        max-width: calc(100% - 20px);
+    }
+
+    /* History */
+    .history-item {
+        padding: 8px;
+    }
+
+    .history-title {
+        font-size: 12px;
+    }
+}
+
+/* ============================================
+   Small Mobile Styles (max 480px)
+   ============================================ */
+
+@media (max-width: 480px) {
+    /* Chat Header */
+    .chat-header {
+        padding: 10px 12px;
+    }
+
+    .chat-header h1 {
+        font-size: 0.9rem;
+    }
+
+    .status {
+        font-size: 11px;
+        gap: 4px;
+    }
+
+    .status-dot {
+        width: 6px;
+        height: 6px;
+    }
+
+    /* Messages */
+    .messages-container {
+        padding: 10px;
+    }
+
+    .message {
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+
+    .message-content {
+        max-width: 90%;
+    }
+
+    .message-text {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+
+    .message-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 10px;
+    }
+
+    .message-time {
+        font-size: 9px;
+    }
+
+    .message-actions {
+        gap: 4px;
+    }
+
+    .message-actions button {
+        padding: 2px 6px;
+        font-size: 10px;
+    }
+
+    /* Input Area */
+    .input-container {
+        padding: 10px 12px;
+    }
+
     .input-actions {
         gap: 4px;
     }
 
-    .action-btn, .send-btn {
-        width: 28px;
-        height: 28px;
+    .action-btn,
+    .send-btn {
+        width: 24px;
+        height: 24px;
+        font-size: 10px;
     }
 
-    .citations-panel {
-        width: 100%;
-        right: 0;
-        left: 0;
-        border-radius: 12px 12px 0 0;
+    /* Suggestions */
+    .suggestions {
+        gap: 4px;
     }
 
+    .suggestion {
+        font-size: 10px;
+        padding: 3px 8px;
+    }
+
+    /* Citations */
     .citation-item {
         flex-direction: column;
+        gap: 4px;
     }
 
     .citation-number {
-        margin-bottom: 4px;
+        margin-bottom: 2px;
+    }
+
+    .citation-text {
+        font-size: 11px;
+    }
+
+    .citation-meta {
+        font-size: 10px;
+        flex-wrap: wrap;
+    }
+
+    /* Settings */
+    .agent-buttons,
+    .citation-buttons {
+        gap: 4px;
+    }
+
+    .agent-btn,
+    .citation-btn,
+    .gender-btn {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+
+    /* History */
+    .history-item {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    .history-date {
+        font-size: 9px;
+    }
+
+    /* Voice */
+    .voice-wave span:nth-child(3) {
+        height: 14px;
+    }
+
+    .voice-wave span:nth-child(4) {
+        height: 10px;
+    }
+
+    .voice-wave span:nth-child(5) {
+        height: 8px;
+    }
+}
+
+/* ============================================
+   Landscape Mode
+   ============================================ */
+
+@media (max-width: 768px) and (orientation: landscape) {
+    .chat-sidebar {
+        top: 60px;
+        height: calc(100vh - 60px);
+    }
+
+    .messages-container {
+        max-height: calc(100vh - 140px);
+    }
+
+    .citations-panel {
+        max-height: 300px;
+    }
+
+    .citations-list {
+        max-height: 200px;
+    }
+}
+
+/* ============================================
+   Print Styles
+   ============================================ */
+
+@media print {
+    .chat-sidebar,
+    .input-container,
+    .message-actions,
+    .citations-panel,
+    .mobile-menu-btn {
+        display: none !important;
+    }
+
+    .chat-main {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .messages-container {
+        overflow: visible;
+        height: auto;
+    }
+
+    .message {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .message-text {
+        border: 1px solid #ddd;
+        background: none;
     }
 }

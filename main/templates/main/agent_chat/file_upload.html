@@ -1,9 +1,17 @@
-<div class="file-upload-wrapper">
-    <button class="file-upload-btn" id="fileUploadBtn" title="Upload file" type="button">
-        <i class="fas fa-paperclip"></i>
+<div class="file-upload">
+    <button class="action-btn" id="fileBtn" title="Upload file">
+        <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18">
+            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+            <polyline points="13 2 13 9 20 9"/>
+        </svg>
     </button>
-    <input id="fileInput" multiple style="display: none;" type="file">
-    <div class="selected-files-dropdown" id="selectedFilesDropdown" style="display: none;">
-        <div class="selected-files-list" id="selectedFilesList"></div>
+    <input accept=".txt,.pdf,.md,.csv,.json,.png,.jpg,.jpeg,.gif,.smi,.smiles" id="fileInput" multiple style="display: none;"
+           type="file">
+    <div class="upload-progress" id="uploadProgress" style="display: none;">
+        <div class="upload-progress-bar" id="uploadBar"></div>
+        <div class="upload-status-container">
+            <span class="upload-status" id="uploadStatus"></span>
+            <span class="upload-filename" id="uploadFilename"></span>
+        </div>
     </div>
 </div>

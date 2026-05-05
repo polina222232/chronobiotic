@@ -1,180 +1,170 @@
-/**
- * Voice Player Module
- * Handles text-to-speech playback
+//**
+ * Voice Player - Text-to-speech with gender and language selection
  */
 
 class VoicePlayer {
     constructor() {
         this.synth = window.speechSynthesis;
-        this.isPlaying = false;
-        this.currentUtterance = null;
-        this.voiceSettings = this.loadSettings();
-
+        this.voices = [];
+        this.currentGender = localStorage.getItem('voiceGender') || 'female';
+        this.currentLanguage = localStorage.getItem('voiceLanguage') || 'en-US';
+        this.currentPitch = parseFloat(localStorage.getItem('voicePitch') || '1');
+        this.currentRate = parseFloat(localStorage.getItem('voiceSpeed') || '1');
         this.init();
     }
 
     init() {
         this.loadVoices();
-
         if (this.synth) {
             this.synth.onvoiceschanged = () => this.loadVoices();
         }
-
-        // Setup voice settings controls
-        this.setupSettingsControls();
+        this.setupControls();
     }
 
     loadVoices() {
         this.voices = this.synth.getVoices();
+        console.log('Voices loaded:', this.voices.length);
     }
 
-    setupSettingsControls() {
-        const voiceLang = document.getElementById('voiceLanguage');
-        const voiceType = document.getElementById('voiceType');
-        const voiceSpeed = document.getElementById('voiceSpeed');
-        const autoPlay = document.getElementById('autoPlayVoice');
-
-        if (voiceLang) {
-            voiceLang.value = this.voiceSettings.language;
-            voiceLang.addEventListener('change', (e) => {
-                this.voiceSettings.language = e.target.value;
-                this.saveSettings();
-            });
-        }
-
-        if (voiceType) {
-            voiceType.value = this.voiceSettings.type;
-            voiceType.addEventListener('change', (e) => {
-                this.voiceSettings.type = e.target.value;
-                this.saveSettings();
-            });
-        }
-
-        if (voiceSpeed) {
-            voiceSpeed.value = this.voiceSettings.speed;
-            voiceSpeed.addEventListener('input', (e) => {
-                this.voiceSettings.speed = parseFloat(e.target.value);
-                this.saveSettings();
-            });
-        }
-
-        if (autoPlay) {
-            autoPlay.checked = this.voiceSettings.autoPlay;
-            autoPlay.addEventListener('change', (e) => {
-                this.voiceSettings.autoPlay = e.target.checked;
-                this.saveSettings();
-            });
-        }
-    }
-
-    loadSettings() {
-        const saved = localStorage.getItem('voiceSettings');
-        if (saved) {
-            try {
-                return JSON.parse(saved);
-            } catch (e) {
-                console.error('Error loading voice settings:', e);
+    setupControls() {
+        // Gender buttons
+        const genderBtns = document.querySelectorAll('.gender-btn');
+        genderBtns.forEach(btn => {
+            if (btn.dataset.gender === this.currentGender) {
+                btn.classList.add('active');
             }
-        }
-        return {
-            language: 'en-US',
-            type: 'female',
-            speed: 1,
-            autoPlay: true
-        };
-    }
+            btn.addEventListener('click', () => {
+                genderBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.currentGender = btn.dataset.gender;
+                localStorage.setItem('voiceGender', this.currentGender);
+            });
+        });
 
-    saveSettings() {
-        localStorage.setItem('voiceSettings', JSON.stringify(this.voiceSettings));
+        // Voice language
+        const voiceLang = document.getElementById('voiceLanguage');
+        if (voiceLang) {
+            voiceLang.value = this.currentLanguage;
+            voiceLang.addEventListener('change', (e) => {
+                this.currentLanguage = e.target.value;
+                localStorage.setItem('voiceLanguage', this.currentLanguage);
+            });
+        }
+
+        // Voice speed
+        const voiceSpeed = document.getElementById('voiceSpeed');
+        const voiceSpeedValue = document.getElementById('voiceSpeedValue');
+        if (voiceSpeed && voiceSpeedValue) {
+            voiceSpeed.value = this.currentRate;
+            voiceSpeedValue.textContent = this.currentRate;
+            voiceSpeed.addEventListener('input', (e) => {
+                this.currentRate = parseFloat(e.target.value);
+                voiceSpeedValue.textContent = this.currentRate;
+                localStorage.setItem('voiceSpeed', this.currentRate);
+            });
+        }
+
+        // Voice pitch
+        const voicePitch = document.getElementById('voicePitch');
+        const voicePitchValue = document.getElementById('voicePitchValue');
+        if (voicePitch && voicePitchValue) {
+            voicePitch.value = this.currentPitch;
+            voicePitchValue.textContent = this.currentPitch;
+            voicePitch.addEventListener('input', (e) => {
+                this.currentPitch = parseFloat(e.target.value);
+                voicePitchValue.textContent = this.currentPitch;
+                localStorage.setItem('voicePitch', this.currentPitch);
+            });
+        }
+
+        // Auto-play
+        const autoPlay = document.getElementById('autoPlayVoice');
+        if (autoPlay) {
+            autoPlay.checked = localStorage.getItem('autoPlayVoice') !== 'false';
+        }
+
+        // Test button
+        const testBtn = document.getElementById('testVoiceBtn');
+        if (testBtn) {
+            testBtn.addEventListener('click', () => {
+                this.speak('Hello! This is a test of the voice system.');
+            });
+        }
     }
 
     speak(text, onEnd = null) {
-        if (!this.synth) {
-            console.warn('Speech synthesis not supported');
-            return;
+        if (!this.synth || !text) return;
+
+        // Cancel any ongoing speech
+        this.synth.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = this.currentLanguage;
+        utterance.rate = this.currentRate;
+        utterance.pitch = this.currentPitch;
+
+        // Find appropriate voice
+        const langPrefix = this.currentLanguage.split('-')[0];
+        const availableVoices = this.voices.filter(v => v.lang.startsWith(langPrefix));
+
+        let selectedVoice = null;
+        if (this.currentGender === 'female') {
+            selectedVoice = availableVoices.find(v =>
+                v.name.toLowerCase().includes('female') ||
+                v.name.toLowerCase().includes('samantha') ||
+                v.name.toLowerCase().includes('google uk english female') ||
+                v.name.toLowerCase().includes('zira')
+            );
+        } else {
+            selectedVoice = availableVoices.find(v =>
+                v.name.toLowerCase().includes('male') ||
+                v.name.toLowerCase().includes('google uk english male') ||
+                v.name.toLowerCase().includes('david')
+            );
         }
 
-        this.stop();
-
-        this.currentUtterance = new SpeechSynthesisUtterance(text);
-        this.currentUtterance.lang = this.voiceSettings.language;
-        this.currentUtterance.rate = this.voiceSettings.speed;
-
-        // Select voice based on settings
-        const selectedVoice = this.selectVoice();
         if (selectedVoice) {
-            this.currentUtterance.voice = selectedVoice;
+            utterance.voice = selectedVoice;
+        } else if (availableVoices.length > 0) {
+            utterance.voice = availableVoices[0];
         }
 
-        this.currentUtterance.onstart = () => {
-            this.isPlaying = true;
-            this.updatePlayButton(true);
+        utterance.onstart = () => {
+            const playBtn = document.getElementById('voicePlayBtn');
+            if (playBtn) {
+                playBtn.innerHTML = '⏹️';
+                playBtn.classList.add('playing');
+            }
         };
 
-        this.currentUtterance.onend = () => {
-            this.isPlaying = false;
-            this.updatePlayButton(false);
+        utterance.onend = () => {
+            const playBtn = document.getElementById('voicePlayBtn');
+            if (playBtn) {
+                playBtn.innerHTML = '🔊';
+                playBtn.classList.remove('playing');
+            }
             if (onEnd) onEnd();
         };
 
-        this.currentUtterance.onerror = (event) => {
+        utterance.onerror = (event) => {
             console.error('Speech error:', event);
-            this.isPlaying = false;
-            this.updatePlayButton(false);
+            const playBtn = document.getElementById('voicePlayBtn');
+            if (playBtn) {
+                playBtn.innerHTML = '🔊';
+                playBtn.classList.remove('playing');
+            }
         };
 
-        this.synth.speak(this.currentUtterance);
-    }
-
-    selectVoice() {
-        const availableVoices = this.voices.filter(v => v.lang.startsWith(this.voiceSettings.language.split('-')[0]));
-
-        if (this.voiceSettings.type === 'female') {
-            const femaleVoice = availableVoices.find(v =>
-                v.name.toLowerCase().includes('female') ||
-                v.name.toLowerCase().includes('samantha') ||
-                v.name.toLowerCase().includes('google uk english female')
-            );
-            if (femaleVoice) return femaleVoice;
-        } else {
-            const maleVoice = availableVoices.find(v =>
-                v.name.toLowerCase().includes('male') ||
-                v.name.toLowerCase().includes('google uk english male')
-            );
-            if (maleVoice) return maleVoice;
-        }
-
-        return availableVoices[0] || this.voices[0];
+        this.synth.speak(utterance);
     }
 
     stop() {
-        if (this.synth && this.isPlaying) {
+        if (this.synth) {
             this.synth.cancel();
-            this.isPlaying = false;
-            this.updatePlayButton(false);
-        }
-    }
-
-    updatePlayButton(isPlaying) {
-        const playBtn = document.getElementById('voicePlayBtn');
-        if (playBtn) {
-            if (isPlaying) {
-                playBtn.innerHTML = '<i class="fas fa-stop"></i>';
-                playBtn.title = 'Stop';
-                playBtn.classList.add('playing');
-            } else {
-                playBtn.innerHTML = '<i class="fas fa-play"></i>';
-                playBtn.title = 'Play last response';
-                playBtn.classList.remove('playing');
-            }
-        }
-    }
-
-    playLastResponse(responseText) {
-        if (this.voiceSettings.autoPlay && responseText) {
-            this.speak(responseText);
         }
     }
 }
 
-const voicePlayer = new VoicePlayer();
+document.addEventListener('DOMContentLoaded', () => {
+    window.voicePlayer = new VoicePlayer();
+});

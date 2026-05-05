@@ -1,44 +1,37 @@
-<div class="agent-settings-panel">
-    <button class="settings-toggle" id="settingsToggleBtn">⚙️ Settings</button>
-    <div class="settings-content" id="settingsContent" style="display:none">
-        <div class="settings-section">
-            <div class="section-title">🤖 Agent Type</div>
-            <div class="agent-type-buttons">
-                <button class="agent-type-btn" data-agent="assistant">Assistant</button>
-                <button class="agent-type-btn" data-agent="analyst">Analyst</button>
-                <button class="agent-type-btn" data-agent="researcher">Researcher</button>
+<div class="settings-container">
+    <button class="settings-btn" id="settingsBtn">⚙️ Settings</button>
+    <div class="settings-panel" id="settingsPanel" style="display: none;">
+        <div class="setting-group">
+            <label>Agent Type</label>
+            <div class="agent-buttons">
+                <button class="agent-option" data-agent="assistant" type="button">🤖 Assistant</button>
+                <button class="agent-option" data-agent="analyst" type="button">📊 Analyst</button>
+                <button class="agent-option" data-agent="researcher" type="button">🔬 Researcher</button>
             </div>
         </div>
-        <div class="settings-section">
-            <div class="section-title">📝 Citation Style</div>
-            <div class="citation-style-buttons">
-                <button class="citation-btn" data-style="gost">GOST</button>
-                <button class="citation-btn" data-style="apa">APA</button>
-                <button class="citation-btn" data-style="mla">MLA</button>
-                <button class="citation-btn" data-style="chicago">Chicago</button>
+        <div class="setting-group">
+            <label>Citation Style</label>
+            <div class="citation-buttons">
+                <button class="citation-option" data-style="gost-r" type="button">ГОСТ Р</button>
+                <button class="citation-option" data-style="apa" type="button">APA</button>
+                <button class="citation-option" data-style="mla" type="button">MLA</button>
             </div>
         </div>
-        <div class="settings-section">
-            <div class="section-title">⚙️ Options</div>
-            <label class="setting-checkbox">
-                <input checked id="streamToggle" type="checkbox"> Streaming responses
-            </label>
-            <label class="setting-checkbox">
-                <input checked id="citationsToggle" type="checkbox"> Show citations
-            </label>
+        <div class="setting-group">
+            <label>Temperature: <span id="tempVal">0.7</span></label>
+            <input id="tempSlider" max="1" min="0" step="0.05" type="range" value="0.7">
+        </div>
+        <div class="setting-group">
+            <label><input checked id="streamToggle" type="checkbox"> Streaming responses</label>
+        </div>
+        <div class="setting-group">
+            <label><input checked id="citationsToggle" type="checkbox"> Show citations</label>
+        </div>
+        <div class="setting-group">
+            <label><input checked id="soundToggle" type="checkbox"> Sound effects</label>
+        </div>
+        <div class="setting-group">
+            <label><input checked id="autoScrollToggle" type="checkbox"> Auto-scroll</label>
         </div>
     </div>
 </div>
-
-<style>
-    .agent-settings-panel { width:100%; margin-bottom:10px; }
-    .settings-toggle { width:100%; padding:10px; background:#f0f4f8; border:none; border-radius:8px; cursor:pointer; text-align:left; font-size:13px; }
-    .settings-toggle:hover { background:#e5e8eb; }
-    .settings-content { margin-top:8px; background:#f8fafc; border-radius:8px; padding:12px; }
-    .settings-section { margin-bottom:15px; padding-bottom:10px; border-bottom:1px solid #e5e8eb; }
-    .section-title { font-size:11px; color:#8e9aaf; margin-bottom:8px; }
-    .agent-type-buttons, .citation-style-buttons { display:flex; gap:8px; flex-wrap:wrap; }
-    .agent-type-btn, .citation-btn { padding:6px 12px; background:white; border:1px solid #d0d7de; border-radius:6px; cursor:pointer; font-size:12px; }
-    .agent-type-btn.active, .citation-btn.active { background:#2c3e50; color:white; border-color:#2c3e50; }
-    .setting-checkbox { display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:12px; color:#4a5568; cursor:pointer; }
-</style>

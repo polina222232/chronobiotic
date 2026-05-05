@@ -1,10 +1,13 @@
 from django.urls import path
 
-from . import views
+from . import views, admin
 
 urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('publications', views.publications, name='publications'),
+    path('rawdata', views.rawdata, name='rawdata'),
     path('', views.index, name='home'),
-    path('about', views.about, name='about'),
+    path('about/', views.about, name='about'),  # Добавлен слеш
     path('substance/<slug:linkname>/', views.substance_detail, name='substance_detail'),
     path('get_synonyms/<str:linkname>/', views.get_synonyms, name='get_synonyms'),
     path('agent-chat/', views.agent_chat, name='agent_chat'),

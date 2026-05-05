@@ -1,0 +1,7 @@
+-r base.txt
+
+rdkit-pypi==2023.9.4
+pubchempy==1.0.4
+chembl-webresource-client==0.10.9
+biopython==1.84
+pypdb==2.2

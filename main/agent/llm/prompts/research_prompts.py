@@ -1,3 +1,1 @@
-"""Module for ..."""
 
-# Placeholder file

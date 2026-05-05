@@ -1,4 +1,9 @@
-/* Voice Interface */
+/* Voice Interface - Voice Recording and Playback */
+
+/* ============================================
+   Voice Wave Animation
+   ============================================ */
+
 .voice-wave {
     display: inline-flex;
     gap: 3px;
@@ -47,10 +52,19 @@
     }
 }
 
-.recording {
+/* ============================================
+   Recording Button Animation
+   ============================================ */
+
+.voice-btn.recording {
     background: #dc3545 !important;
     color: white !important;
     animation: recording-pulse 1.5s infinite;
+}
+
+.voice-btn.listening {
+    background: #28a745 !important;
+    color: white !important;
 }
 
 @keyframes recording-pulse {
@@ -62,7 +76,288 @@
     }
 }
 
-#voiceStatus {
+/* ============================================
+   Voice Status Indicator
+   ============================================ */
+
+.voice-status {
+    font-size: 11px;
+    margin-left: 8px;
+    transition: color 0.2s;
+}
+
+.voice-status.recording {
+    color: #dc3545;
+    font-weight: 500;
+}
+
+.voice-status.processing {
+    color: #ffc107;
+}
+
+.voice-status.ready {
+    color: #28a745;
+}
+
+/* ============================================
+   Voice Button Tooltip
+   ============================================ */
+
+.voice-btn {
+    position: relative;
+}
+
+.voice-btn .tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    white-space: nowrap;
+    margin-bottom: 8px;
+    display: none;
+    z-index: 100;
+}
+
+.voice-btn:hover .tooltip {
+    display: block;
+}
+
+/* ============================================
+   Voice Settings Panel
+   ============================================ */
+
+.voice-settings {
+    margin-top: 8px;
+}
+
+.voice-settings-toggle {
+    width: 100%;
+    padding: 10px;
+    background: #f0f4f8;
+    border: 1px solid #e5e8eb;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 13px;
+    transition: background 0.2s;
+}
+
+.voice-settings-toggle:hover {
+    background: #e5e8eb;
+}
+
+.voice-panel {
+    margin-top: 12px;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+
+/* ============================================
+   Test Voice Button
+   ============================================ */
+
+.test-voice-btn {
+    width: 100%;
+    padding: 8px;
+    background: #2c3e50;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.2s;
+}
+
+.test-voice-btn:hover {
+    background: #1a252f;
+}
+
+/* ============================================
+   Language Select
+   ============================================ */
+
+.voice-select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    font-size: 12px;
+    background: white;
+    cursor: pointer;
+}
+
+.voice-select:focus {
+    outline: none;
+    border-color: #2c3e50;
+}
+
+/* ============================================
+   Gender Buttons
+   ============================================ */
+
+.gender-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.gender-btn {
+    padding: 6px 12px;
+    background: white;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.gender-btn:hover {
+    background: #e5e8eb;
+}
+
+.gender-btn.active {
+    background: #2c3e50;
+    color: white;
+    border-color: #2c3e50;
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media (max-width: 768px) {
+    .voice-wave span:nth-child(3) {
+        height: 16px;
+    }
+
+    .voice-wave span:nth-child(4) {
+        height: 12px;
+    }
+
+    .voice-wave span:nth-child(5) {
+        height: 8px;
+    }
+
+    .voice-status {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .voice-wave {
+        margin-left: 4px;
+    }
+
+    .voice-wave span {
+        width: 2px;
+    }
+
+    .gender-btn {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+}
+
+/* Voice Interface - Voice Recording and Playback */
+
+.voice-interface {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.voice-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: all 0.2s;
+}
+
+.voice-btn:hover {
+    background: #e5e8eb;
+}
+
+.voice-btn.recording {
+    background: #dc3545;
+    color: white;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 6px rgba(220, 53, 69, 0);
+    }
+}
+
+.voice-wave {
+    display: inline-flex;
+    gap: 3px;
+    align-items: center;
+}
+
+.voice-wave span {
+    width: 3px;
+    background: #dc3545;
+    border-radius: 2px;
+    animation: voice-wave 1s infinite ease-in-out;
+}
+
+.voice-wave span:nth-child(1) {
+    height: 10px;
+    animation-delay: 0s;
+}
+
+.voice-wave span:nth-child(2) {
+    height: 16px;
+    animation-delay: 0.1s;
+}
+
+.voice-wave span:nth-child(3) {
+    height: 20px;
+    animation-delay: 0.2s;
+}
+
+.voice-wave span:nth-child(4) {
+    height: 16px;
+    animation-delay: 0.3s;
+}
+
+.voice-wave span:nth-child(5) {
+    height: 10px;
+    animation-delay: 0.4s;
+}
+
+@keyframes voice-wave {
+    0%, 100% {
+        transform: scaleY(1);
+    }
+    50% {
+        transform: scaleY(1.5);
+    }
+}
+
+.voice-status {
     font-size: 11px;
     margin-left: 8px;
     transition: color 0.2s;

@@ -1,5 +1,107 @@
-asgiref==3.8.1
+# Core Django
 Django==5.1.2
-pillow==11.0.0
-sqlparse==0.5.1
-tzdata==2024.2
+channels==4.3.2
+channels-redis==4.2.0
+daphne==4.1.2
+asgiref==3.9.0
+
+# Database
+psycopg2-binary==2.9.10
+sqlparse==0.5.3
+redis==5.2.1
+
+# Image processing
+pillow==11.1.0
+
+# Timezone
+tzdata==2025.1
+
+# REST API
+djangorestframework==3.15.2
+drf-yasg==1.21.10
+django-cors-headers==4.7.0
+
+# Environment & Config
+python-decouple==3.8
+python-dotenv==1.0.1
+
+# LLM & AI (совместимые версии)
+openai==1.59.3
+anthropic==0.42.0
+google-generativeai==0.8.4
+cohere==5.13.9
+langchain==0.3.14
+langchain-community==0.3.14
+langchain-openai==0.2.14
+tiktoken==0.8.0
+
+# RAG & Vector Search
+chromadb==0.5.23
+faiss-cpu==1.9.0.post1
+qdrant-client==1.13.2
+rank-bm25==0.2.2
+pypdf==5.1.0
+unstructured==0.16.25
+
+# Chemical Analysis
+#rdkit-pypi==2024.9.6
+pubchempy==1.0.4
+chembl-webresource-client==0.10.9
+biopython==1.85
+pypdb==2.3
+
+# Knowledge Graph
+networkx==3.4.2
+neo4j==5.26.0
+node2vec==0.5.0
+scikit-learn==1.6.1
+numpy==2.2.3
+pandas==2.2.3
+
+# Computer Vision
+opencv-python==4.11.0.86
+easyocr==1.7.2
+pytesseract==0.3.13
+
+# Voice Processing
+openai-whisper==20231117
+SpeechRecognition==3.14.1
+pyttsx3==2.90
+elevenlabs==2.10.1
+pydub==0.25.1
+pygame==2.6.1
+
+# Async Tasks
+celery==5.4.0
+django-celery-results==2.5.1
+
+# Web Scraping & HTTP
+requests==2.32.3
+beautifulsoup4==4.12.3
+selenium==4.27.1
+scrapy==2.11.2
+
+# Utilities
+python-magic==0.4.27
+ratelimit==2.2.1
+cachetools==5.5.1
+tenacity==9.0.0
+loguru==0.7.3
+tqdm==4.67.1
+
+# Development & Testing
+pytest==8.3.4
+pytest-django==4.9.0
+pytest-cov==6.0.0
+factory-boy==3.3.3
+faker==33.1.0
+black==25.1.0
+flake8==7.1.2
+mypy==1.14.1
+
+# Production
+gunicorn==23.0.0
+uvicorn==0.34.0
+sentry-sdk==2.20.0
+django-storages==1.14.5
+boto3==1.35.76

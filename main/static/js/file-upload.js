@@ -9,8 +9,8 @@ class FileUpload {
         this.progressDiv = document.getElementById('uploadProgress');
         this.progressBar = document.getElementById('uploadBar');
         this.statusSpan = document.getElementById('uploadStatus');
-        this.uploadQueue = [];
-        this.isUploading = false;
+        this.filenameSpan = document.getElementById('uploadFilename');
+        this.uploadedFiles = [];
         this.init();
     }
 
@@ -22,7 +22,7 @@ class FileUpload {
 
             this.fileInput.addEventListener('change', (e) => {
                 const files = Array.from(e.target.files);
-                this.uploadQueue.push(...files);
+                this.uploadedFiles.push(...files);
                 this.processQueue();
                 this.fileInput.value = '';
             });
@@ -30,10 +30,10 @@ class FileUpload {
     }
 
     async processQueue() {
-        if (this.isUploading || this.uploadQueue.length === 0) return;
+        if (this.isUploading || this.uploadedFiles.length === 0) return;
 
         this.isUploading = true;
-        const file = this.uploadQueue.shift();
+        const file = this.uploadedFiles.shift();
         await this.uploadFile(file);
         this.isUploading = false;
         this.processQueue();
@@ -42,13 +42,14 @@ class FileUpload {
     async uploadFile(file) {
         this.showProgress(file.name);
 
+        // Simulate upload progress
         for (let percent = 0; percent <= 100; percent += 10) {
-            await this.delay(50);
-            this.updateProgress(percent, `Uploading ${file.name} - ${percent}%`);
+            await this.delay(30);
+            this.updateProgress(percent, `Uploading... ${percent}%`);
         }
 
-        await this.delay(300);
-        this.updateProgress(100, `Processing ${file.name}...`);
+        await this.delay(200);
+        this.updateProgress(100, 'Processing (parsing)...');
 
         await this.parseFile(file);
 
@@ -56,78 +57,63 @@ class FileUpload {
     }
 
     async parseFile(file) {
-        const fileType = file.type;
-        const fileName = file.name;
-        const fileExt = fileName.split('.').pop().toLowerCase();
-
-        this.updateProgress(100, `Parsing ${fileName}...`);
-
-        await this.delay(500);
-
+        const content = await this.readFile(file);
         const input = document.getElementById('messageInput');
-        if (!input) return;
 
-        let content = '';
+        if (input) {
+            const currentValue = input.value;
+            let newContent = '';
 
-        // Images
-        if (fileType.startsWith('image/')) {
-            const reader = new FileReader();
-            const imgData = await new Promise((resolve) => {
-                reader.onload = (e) => resolve(e.target.result);
-                reader.readAsDataURL(file);
-            });
-            content = `[Image: ${fileName}] (${(file.size / 1024).toFixed(1)} KB)\nImage data: ${imgData.substring(0, 100)}...`;
-        }
-        // PDF
-        else if (fileType === 'application/pdf' || fileExt === 'pdf') {
-            content = `[PDF Document: ${fileName}] (${(file.size / 1024).toFixed(1)} KB)\nPDF files can be processed for text extraction.`;
-        }
-        // Text files
-        else if (fileType === 'text/plain' || fileExt === 'txt' || fileExt === 'md' || fileExt === 'csv') {
-            const text = await this.readFileAsText(file);
-            content = `📄 File: ${fileName}\n\n${text.substring(0, 2000)}${text.length > 2000 ? '\n\n[Content truncated...]' : ''}`;
-        }
-        // Word documents
-        else if (fileType.includes('word') || fileExt === 'docx' || fileExt === 'doc') {
-            content = `📄 Word Document: ${fileName} (${(file.size / 1024).toFixed(1)} KB)\nWord documents can be processed for text extraction.`;
-        }
-        // JSON
-        else if (fileType === 'application/json' || fileExt === 'json') {
-            const jsonText = await this.readFileAsText(file);
-            try {
-                const json = JSON.parse(jsonText);
-                content = `📊 JSON Data: ${fileName}\n\`\`\`json\n${JSON.stringify(json, null, 2).substring(0, 1500)}\n\`\`\``;
-            } catch (e) {
-                content = `📊 JSON File: ${fileName}\n${jsonText.substring(0, 1000)}`;
+            if (file.type.startsWith('image/')) {
+                newContent = `🖼️ Image: ${file.name} (${(file.size / 1024).toFixed(1)} KB)\n`;
+                newContent += `[Image uploaded successfully. You can ask questions about this image.]`;
+            } else if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+                newContent = `📄 PDF Document: ${file.name} (${(file.size / 1024).toFixed(1)} KB)\n`;
+                newContent += `[PDF document loaded. You can ask me to analyze the content.]`;
+            } else if (file.name.endsWith('.smi') || file.name.endsWith('.smiles')) {
+                newContent = `🧪 SMILES File: ${file.name}\n\n\`\`\`\n${content.substring(0, 1000)}\n\`\`\`\n\nPlease analyze these chemical structures.`;
+            } else {
+                newContent = `📎 File: ${file.name}\n\n${content.substring(0, 1500)}${content.length > 1500 ? '\n\n[Content truncated...]' : ''}`;
             }
-        }
-        // SMILES files for chemistry
-        else if (fileExt === 'smi' || fileExt === 'smiles') {
-            const smilesText = await this.readFileAsText(file);
-            content = `🧪 SMILES File: ${fileName}\n\n\`\`\`\n${smilesText.substring(0, 1000)}\n\`\`\`\n\nPlease analyze these chemical structures.`;
-        }
-        // Default
-        else {
-            content = `📎 File: ${fileName} (${(file.size / 1024).toFixed(1)} KB, type: ${fileType || 'unknown'})`;
+
+            input.value = currentValue ? currentValue + '\n\n' + newContent : newContent;
+            input.dispatchEvent(new Event('input'));
         }
 
-        input.value = content;
-        this.showToast(`✓ File "${fileName}" loaded successfully!`, '#28a745');
+        this.showToast(`✓ ${file.name} loaded!`, '#28a745');
     }
 
-    readFileAsText(file) {
-        return new Promise((resolve, reject) => {
+    readFile(file) {
+        return new Promise((resolve) => {
             const reader = new FileReader();
             reader.onload = (e) => resolve(e.target.result);
-            reader.onerror = reject;
-            reader.readAsText(file);
+
+            if (file.type === 'text/plain' ||
+                file.name.endsWith('.txt') ||
+                file.name.endsWith('.md') ||
+                file.name.endsWith('.csv') ||
+                file.name.endsWith('.json') ||
+                file.name.endsWith('.smi') ||
+                file.name.endsWith('.smiles')) {
+                reader.readAsText(file);
+            } else if (file.type.startsWith('image/')) {
+                const img = new Image();
+                img.onload = () => {
+                    resolve(`[Image: ${file.name}] (${img.width}x${img.height}, ${(file.size / 1024).toFixed(1)} KB)`);
+                };
+                img.src = URL.createObjectURL(file);
+                setTimeout(() => resolve(`[Image: ${file.name}] (${(file.size / 1024).toFixed(1)} KB)`), 100);
+            } else {
+                resolve(`[File: ${file.name}] (${(file.size / 1024).toFixed(1)} KB, type: ${file.type || 'unknown'})`);
+            }
         });
     }
 
-    showProgress(fileName) {
+    showProgress(filename) {
         if (this.progressDiv) {
             this.progressDiv.style.display = 'block';
-            this.updateProgress(0, `Starting upload of ${fileName}...`);
+            if (this.filenameSpan) this.filenameSpan.textContent = filename;
+            this.updateProgress(0, 'Starting...');
         }
     }
 
@@ -141,12 +127,12 @@ class FileUpload {
     }
 
     hideProgress() {
-        if (this.progressDiv) {
-            setTimeout(() => {
+        setTimeout(() => {
+            if (this.progressDiv) {
                 this.progressDiv.style.display = 'none';
                 this.updateProgress(0, '');
-            }, 1000);
-        }
+            }
+        }, 1000);
     }
 
     showToast(message, bgColor = '#333') {
@@ -154,18 +140,18 @@ class FileUpload {
         toast.textContent = message;
         toast.style.cssText = `
             position: fixed;
-            bottom: 20px;
+            bottom: 80px;
             left: 50%;
             transform: translateX(-50%);
             background: ${bgColor};
             color: white;
             padding: 8px 16px;
-           бorder-radius: 8px;
+            border-radius: 8px;
             z-index: 10000;
             font-size: 13px;
         `;
         document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
+        setTimeout(() => toast.remove(), 2000);
     }
 
     delay(ms) {
@@ -173,5 +159,6 @@ class FileUpload {
     }
 }
 
-const fileUpload = new FileUpload();
-window.fileUpload = fileUpload;
+document.addEventListener('DOMContentLoaded', () => {
+    window.fileUpload = new FileUpload();
+});

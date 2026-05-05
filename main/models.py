@@ -129,7 +129,8 @@ class Chronobiotic(models.Model):
     target = models.ManyToManyField(Targets, help_text="Select a targets of this ")
     effect = models.ManyToManyField(Effect, help_text="Select a effects of this ", blank=True)
     # ManyToManyField used because genre can contain many books. Books can cover many genres.
-
+    # analysis_cache = models.JSONField(null=True, blank=True)
+    # last_analyzed = models.DateTimeField(null=True, blank=True)
     # clinictrials = models.ManyToManyField(Clinicaltrials, help_text="Select a class for this biotic")
     class Meta:
         db_table: str = 'chronobiotic'

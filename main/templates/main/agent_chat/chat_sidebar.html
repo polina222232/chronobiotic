@@ -3,32 +3,42 @@
     <div class="sidebar-header">
         <div class="logo">
             <div class="logo-icon">AI</div>
-            <h2>ChronoBot</h2>
+            <h2>Chrono<span>Bot</span></h2>
         </div>
-        <button class="new-chat-btn" id="newChatBtn">➕ New chat</button>
+        <button class="new-chat-btn" id="newChatBtn">
+            <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16">
+                <path d="M12 5v14M5 12h14"/>
+            </svg>
+            New chat
+        </button>
     </div>
 
-    <!-- History -->
-    <div class="history-container">
-        <div class="history-header">📋 Recent chats</div>
-        <ul class="history-list" id="historyList"></ul>
-    </div>
-
-    <!-- Model Selector -->
-    <div class="model-selector">
-        <div class="model-header">🧠 AI Model
-            {% include 'main/agent_chat/model_selector.html' %}
-        </div>
-
-    </div>
-
-    <!-- Settings -->
-    <div class="settings-container">
-        {% include 'main/agent_chat/agent_settings.html' %}
-    </div>
+    {% include 'main/agent_chat/conversation_history.html' %}
+    {% include 'main/agent_chat/agent_settings.html' %}
+    {% include 'main/agent_chat/voice_settings.html' %}
 
     <div class="sidebar-footer">
-        <div class="user-info">👤 Guest</div>
-        <button class="clear-btn" id="clearHistoryBtn">🗑️</button>
+        <div class="user-info">
+            <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span>Guest</span>
+        </div>
+        <div class="sidebar-actions">
+            <button class="sidebar-action" id="clearHistoryBtn" title="Clear history">
+                <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+            </button>
+            <button class="sidebar-action" id="exportChatBtn" title="Export chat">
+                <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" x2="12" y1="15" y2="3"/>
+                </svg>
+            </button>
+        </div>
     </div>
 </aside>

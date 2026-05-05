@@ -1,140 +1,139 @@
 {% extends 'main/base.html' %}
 {% load static %}
-{% block title %}{{ substance.gname }} - ChronobioticsDB{% endblock %}
+{% block title %}{{ substance.gname }}{% endblock %}
 
 {% block content %}
-<div class="fade-in">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a></li>
-            <li class="breadcrumb-item active">{{ substance.gname }}</li>
-        </ol>
-    </nav>
+<div class="container">
+    <br>
+    <br>
+    <h1 class="mt-4">{{ substance.gname }}</h1>
 
-    <div class="card shadow-sm">
-        <div class="card-header" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
-            <h1 class="mb-0">{{ substance.gname }}</h1>
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <img alt="{{ substance.gname }}" class="img-fluid" src="{{ substance.updphoto.url }}">
         </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-4 text-center">
-                    {% if substance.updphoto %}
-                    <img class="img-fluid rounded shadow-sm" src="{{ substance.updphoto.url }}"
-                         style="max-height: 300px; object-fit: contain;">
-                    {% else %}
-                    <div class="bg-light rounded p-5">
-                        <i class="fas fa-flask fa-4x text-muted"></i>
-                    </div>
-                    {% endif %}
-                    <div class="mt-3">
-                        <a class="btn btn-success btn-block" href="{% url 'agent_chat' %}"
-                           onclick="sessionStorage.setItem('pendingQuestion', 'Tell me about {{ substance.gname }}');">
-                            <i class="fas fa-robot"></i> Ask AI
-                        </a>
-                    </div>
-                </div>
-                <div class="col-md-8">
-                    <h3>Basic Information</h3>
-                    <table class="table table-sm">
-                        <tr>
-                            <th>Formula:</th>
-                            <td><code>{{ substance.molecula|default:'Not specified' }}</code></td>
-                        </tr>
-                        <tr>
-                            <th>IUPAC Name:</th>
-                            <td>{{ substance.iupacname|default:'Not specified' }}</td>
-                        </tr>
-                        <tr>
-                            <th>SMILES:</th>
-                            <td><code class="text-wrap">{{ substance.smiles|default:'Not specified' }}</code></td>
-                        </tr>
-                        <tr>
-                            <th>FDA Status:</th>
-                            <td><span class="badge badge-info">{{ substance.fdastatus|default:'Pending' }}</span></td>
-                        </tr>
-                    </table>
+        <div class="col-md-8">
+            <h3>Basic Information</h3>
+            <p><strong>Formula:</strong> {{ substance.molecula }}</p>
+            <p><strong>IUPAC Name:</strong> {{ substance.iupacname }}</p>
+            <p><strong>SMILES:</strong> {{ substance.smiles }}</p>
+            <p><strong>FDA Status:</strong> {{ substance.fdastatus }}</p>
 
-                    <h3>Synonyms</h3>
-                    <ul>
-                        {% for synonym in substance.synonyms.all %}
-                        <li>{{ synonym.synonymsmname }}</li>
-                        {% empty %}
-                        <li class="text-muted">No synonyms available</li>
-                        {% endfor %}
-                    </ul>
+            <h3 class="mt-4">Synonyms</h3>
+            <ul>
+                {% for synonym in substance.synonyms.all %}
+                <li>{{ synonym.synonymsmname }}</li>
+                {% empty %}
+                <li>Currently on Update</li>
+                {% endfor %}
+            </ul>
 
-                    <h3>Description</h3>
-                    <p>{{ substance.description|default:'No description available' }}</p>
-                </div>
+            <h3 class="mt-4">Description</h3>
+            <p>{{ substance.description }}</p>
+
+            <h3 class="mt-4">Classes</h3>
+            <ul>
+                {% for class in substance.classf.all %}
+                <li>{{ class.nameclass }}</li>
+                {% empty %}
+                <li>No classes available</li>
+                {% endfor %}
+            </ul>
+
+            <h3 class="mt-4">Effects</h3>
+            <ul>
+                {% for effect in substance.effect.all %}
+                <li>{{ effect.Effectname }}</li>
+                {% empty %}
+                <li>No effects available</li>
+                {% endfor %}
+            </ul>
+
+            <h3 class="mt-4">Mechanisms</h3>
+            <ul>
+                {% for mechanism in substance.mechanisms.all %}
+                <li>{{ mechanism.mechanismname }}</li>
+                {% empty %}
+                <li>No mechanisms available</li>
+                {% endfor %}
+            </ul>
+
+            <h3 class="mt-4">Targets</h3>
+            <ul>
+                {% for target in substance.target.all %}
+                <li><a href="{{ target.targeturl }}" target="_blank">{{ target.targetsname }}</a> - {{
+                    target.targetsfullname }}
+                </li>
+                {% empty %}
+                <li>No targets available</li>
+                {% endfor %}
+            </ul>
+
+            <h3 class="mt-4">Articles</h3>
+            <ul>
+                {% for article in substance.articles.all %}
+                <li>
+                    <a href="{{ article.articleurl }}" target="_blank">{{ article.articlename }}</a>
+                </li>
+                {% empty %}
+                <li>No articles available</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <h3>External Links</h3>
+        <div class="row">
+            {% if substance.pubchem %}
+            <div class="col-md-3 mb-2">
+                <a class="btn btn-outline-primary btn-block" href="{{ substance.pubchem }}" target="_blank">PubChem</a>
             </div>
+            {% endif %}
 
-            <hr>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <h3>Effects</h3>
-                    <ul>
-                        {% for effect in substance.effect.all %}
-                        <li>{{ effect.Effectname }}</li>
-                        {% empty %}
-                        <li class="text-muted">No effects</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                <div class="col-md-6">
-                    <h3>Mechanisms</h3>
-                    <ul>
-                        {% for mechanism in substance.mechanisms.all %}
-                        <li>{{ mechanism.mechanismname }}</li>
-                        {% empty %}
-                        <li class="text-muted">No mechanisms</li>
-                        {% endfor %}
-                    </ul>
-                </div>
+            {% if substance.chemspider %}
+            <div class="col-md-3 mb-2">
+                <a class="btn btn-outline-primary btn-block" href="{{ substance.chemspider }}" target="_blank">ChemSpider</a>
             </div>
+            {% endif %}
 
-            <div class="row">
-                <div class="col-md-6">
-                    <h3>Targets</h3>
-                    <ul>
-                        {% for target in substance.target.all %}
-                        <li><a href="{{ target.targeturl }}" target="_blank">{{ target.targetsname }}</a></li>
-                        {% empty %}
-                        <li class="text-muted">No targets</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                <div class="col-md-6">
-                    <h3>Articles</h3>
-                    <ul>
-                        {% for article in substance.articles.all %}
-                        <li><a href="{{ article.articleurl }}" target="_blank">{{ article.articlename }}</a></li>
-                        {% empty %}
-                        <li class="text-muted">No articles</li>
-                        {% endfor %}
-                    </ul>
-                </div>
+            {% if substance.drugbank %}
+            <div class="col-md-3 mb-2">
+                <a class="btn btn-outline-primary btn-block" href="{{ substance.drugbank }}"
+                   target="_blank">DrugBank</a>
             </div>
+            {% endif %}
 
-            <h3>External Links</h3>
-            <div class="row">
-                {% if substance.pubchem %}
-                <div class="col-md-3 mb-2">
-                    <a class="btn btn-outline-primary btn-block" href="{{ substance.pubchem }}"
-                       target="_blank">PubChem</a>
-                </div>
-                {% endif %}
-                {% if substance.drugbank %}
-                <div class="col-md-3 mb-2">
-                    <a class="btn btn-outline-primary btn-block" href="{{ substance.drugbank }}" target="_blank">DrugBank</a>
-                </div>
-                {% endif %}
-                {% if substance.chebi %}
-                <div class="col-md-3 mb-2">
-                    <a class="btn btn-outline-primary btn-block" href="{{ substance.chebi }}" target="_blank">ChEBI</a>
-                </div>
-                {% endif %}
+            {% if substance.chebi %}
+            <div class="col-md-3 mb-2">
+                <a class="btn btn-outline-primary btn-block" href="{{ substance.chebi }}" target="_blank">ChEBI</a>
             </div>
+            {% endif %}
+
+            {% if substance.uniprot %}
+            <div class="col-md-3 mb-2">
+                <a class="btn btn-outline-primary btn-block" href="{{ substance.uniprot }}" target="_blank">UniProt</a>
+            </div>
+            {% endif %}
+
+            {% if substance.kegg %}
+            <div class="col-md-3 mb-2">
+                <a class="btn btn-outline-primary btn-block" href="{{ substance.kegg }}" target="_blank">KEGG</a>
+            </div>
+            {% endif %}
+
+            {% if substance.selleckchem %}
+            <div class="col-md-3 mb-2">
+                <a class="btn btn-outline-primary btn-block" href="{{ substance.selleckchem }}" target="_blank">Selleckchem</a>
+            </div>
+            {% endif %}
+
+            {% if substance.linkslists %}
+            <div class="col-md-3 mb-2">
+                <a class="btn btn-outline-primary btn-block" href="{{ substance.linkslists }}" target="_blank">Additional
+                    Links</a>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

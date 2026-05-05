@@ -1,0 +1,151 @@
+<!DOCTYPE HTML>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+          name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+
+    <title>{% block title %}RAW DATA (Predicted chronobioitcs){% endblock %}</title>
+
+    <link href="{% static 'image/favicon.ico' %}" rel="shortcut icon" type="image">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .content {
+            max-width: 600px;
+            margin-bottom: 20px; /* Отступ снизу для контента */
+        }
+        .content h1 {
+            font-size: 3rem; /* Увеличиваем размер заголовка */
+        }
+        .content p {
+            font-size: 1rem; /* Увеличиваем размер описания */
+        }
+        .contact-us {
+            margin-top: 40px; /* Отступ сверху для блока Contact Us */
+            text-align: left; /* Выравнивание текста по левому краю */
+        }
+        .contact-us h2 {
+            color: #007bff; /* Синий цвет заголовка */
+            font-size: 1.5rem; /* Размер заголовка */
+            margin-bottom: 10px; /* Отступ снизу */
+        }
+        .contact-us ul {
+            list-style-type: none; /* Убираем маркеры списка */
+            padding-left: 0; /* Убираем отступ слева */
+        }
+        .contact-us ul li {
+            margin-bottom: 10px; /* Отступ между элементами списка */
+        }
+        .contact-us a {
+            color: #007bff; /* Синий цвет ссылок */
+            text-decoration: none; /* Убираем подчеркивание */
+        }
+        .contact-us a:hover {
+            text-decoration: underline; /* Подчеркивание при наведении */
+            color: #0056b3; /* Темно-синий цвет ссылки при наведении */
+        }
+        footer {
+            margin-top: auto; /* Футер прижимается к низу */
+            padding: 20px;
+            background-color: #f8f9fa;
+            text-align: center;
+            border-top: 1px solid #e7e7e7;
+            color: gray; /* Серый цвет текста */
+            width: 100%; /* Футер на всю ширину */
+        }
+        footer a {
+            color: gray; /* Цвет ссылки */
+            text-decoration: underline; /* Подчеркивание ссылки */
+        }
+        footer a:hover {
+            color: #0056b3; /* Цвет ссылки при наведении */
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-md navbar-dark bg-secondary fixed-top">
+    <a class="navbar-brand" href="{% url 'home' %}">ChronobioticsDB</a>
+    <button aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"
+            data-target="#navbarsExampleDefault" data-toggle="collapse" type="button">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'about' %}">About</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'publications' %}">Publications</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'rawdata' %}">RAW Data</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+{% block content %}
+<div class="content">
+    <br>
+    <br>
+    <br>
+    <br>
+    <h1>RAW DATA (Predicted chronobioitcs)</h1>
+    <br>
+    <a href="https://pubmed.ncbi.nlm.nih.gov/41172309/" target="_blank">Chronobiotics as potential geroprotectors</a>
+    <br>
+    <br>
+
+    <!-- Блок Contact Us -->
+    <div class="contact-us">
+        <h2>Contact Us</h2>
+        <ul>
+            <li><a href="https://colab.ws/researchers/R-3D16C-00000-PH62D" target="_blank">CoLab Researcher</a></li>
+            <li><a href="https://colab.ws/labs/1240" target="_blank">CoLab Laboratory</a></li>
+            <li><a href="mailto:i@ilyasolovev.ru">E-Mail</a></li>
+            <li><a href="https://t.me/+fYAodhFdRVg3MTgy">Telegram</a></li>
+            <li>
+                <a href="https://www.mdpi.com/2624-5175/3/3/30" target="_blank">
+                    Solovev, I. A., Shaposhnikov, M. V., & Moskalev, A. A. (2021). Chronobiotics KL001 and KS15 extend
+                    lifespan and modify circadian rhythms of Drosophila melanogaster. Clocks & Sleep, 3(3), 429-441.
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+<!-- Футер -->
+<footer>
+    <p>This work was funded by the Russian Science Foundation Grant “Design of the world's first pharmacological
+        database of circadian rhythm modulators (ChronobioticsDB) and organisation of the access to it” (Project no.
+        24-75-00108).</p>
+    <p>
+        <a href="http://pbmc.ibmc.msk.ru/en/article-en/PBMC-2024-70-6-381/" target="_blank">
+            Solovev, I. A., Golubev, D. A. (2024). Chronobiotics: classifications of existing circadian clock
+            modulators, future perspectives. Biomeditsinskaya Khimiya, 70(6), 381-393.
+        </a>
+    </p>
+</footer>
+
+<script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script crossorigin="anonymous"
+        src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

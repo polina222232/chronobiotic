@@ -6,21 +6,25 @@
 {% block extra_css %}
 <link href="{% static 'css/agent-chat.css' %}" rel="stylesheet">
 <link href="{% static 'css/chat-interface.css' %}" rel="stylesheet">
-<link href="{% static 'css/citation-styles.css' %}" rel="stylesheet">
-<link href="{% static 'css/loading-animations.css' %}" rel="stylesheet">
 <link href="{% static 'css/message-bubble.css' %}" rel="stylesheet">
-<link href="{% static 'css/responsive-chat.css' %}" rel="stylesheet">
+<link href="{% static 'css/loading-animations.css' %}" rel="stylesheet">
 <link href="{% static 'css/voice-interface.css' %}" rel="stylesheet">
+<link href="{% static 'css/citation-styles.css' %}" rel="stylesheet">
+<link href="{% static 'css/responsive-chat.css' %}" rel="stylesheet">
+<link href="{% static 'css/rtl-support.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
-<div class="chat-app">
+<div class="chat-app" id="chatApp">
     {% include 'main/agent_chat/chat_sidebar.html' %}
     {% include 'main/agent_chat/base_agent.html' %}
 </div>
 
 <script>
+    // Проверка сохраненного вопроса
     document.addEventListener('DOMContentLoaded', function() {
+        console.log('Chronobiotics AI Assistant starting...');
+
         const pending = sessionStorage.getItem('pendingQuestion');
         if (pending) {
             sessionStorage.removeItem('pendingQuestion');
@@ -37,14 +41,20 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="{% static 'js/markdown-render.js' %}"></script>
 <script src="{% static 'js/message-handler.js' %}"></script>
 <script src="{% static 'js/chat-streaming.js' %}"></script>
-<script src="{% static 'js/citation-manager.js' %}"></script>
+<script src="{% static 'js/citation-display.js' %}"></script>
 <script src="{% static 'js/agent-control.js' %}"></script>
 <script src="{% static 'js/agent-chat.js' %}"></script>
 <script src="{% static 'js/voice-recorder.js' %}"></script>
+<script src="{% static 'js/voice-player.js' %}"></script>
+<script src="{% static 'js/voice-commands.js' %}"></script>
 <script src="{% static 'js/file-upload.js' %}"></script>
 <script src="{% static 'js/language-switcher.js' %}"></script>
 <script src="{% static 'js/llm-manager.js' %}"></script>
+<script src="{% static 'js/audio-effects.js' %}"></script>
+<script src="{% static 'js/realtime-updates.js' %}"></script>
+<script src="{% static 'js/typing-simulator.js' %}"></script>
 {% endblock %}

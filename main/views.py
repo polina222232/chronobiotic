@@ -51,6 +51,12 @@ def get_synonyms(request, linkname):
     except Chronobiotic.DoesNotExist:
         return JsonResponse({'synonyms': []})
 
+def publications(request):
+    return render(request, 'main/publications.html')
+
+def rawdata(request):
+    return render(request, 'main/rawdata.html')
+
 
 def agent_chat(request):
     return render(request, 'main/agent_chat/agent_chat.html')
@@ -59,6 +65,7 @@ def agent_chat(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def chat_api(request):
+    """Chat API endpoint for non-streaming responses"""
     try:
         data = json.loads(request.body)
         message = data.get('message', '')
@@ -94,14 +101,6 @@ def chat_api(request):
 
 *Source: Solovev et al. (2021) Clocks & Sleep*"""
         
-        elif 'target' in msg_lower or 'clock' in msg_lower:
-            response = """**Molecular Targets of Chronobiotics:**
-
-- **CLOCK/BMAL1** - Core clock transcription factors
-- **PER/CRY** - Negative regulators
-- **ROR/REV-ERB** - Nuclear receptors
-- **MT1/MT2** - Melatonin receptors"""
-        
         else:
             response = """I'm ChronobioticsAI! I can help with:
 
@@ -120,7 +119,8 @@ Try asking:
                 'authors': ['Solovev, I. A.', 'Golubev, D. A.'],
                 'title': 'Chronobiotics classifications',
                 'journal': 'Biomeditsinskaya Khimiya',
-                'year': 2024
+                'year': 2024,
+                'type': 'Review'
             })
         
         return JsonResponse({'success': True, 'response': response, 'citations': citations})
@@ -132,6 +132,7 @@ Try asking:
 @csrf_exempt
 @require_http_methods(["POST"])
 def chat_stream(request):
+    """Streaming chat API endpoint"""
     try:
         data = json.loads(request.body)
         message = data.get('message', '')
@@ -139,18 +140,11 @@ def chat_stream(request):
         msg_lower = message.lower()
         
         if 'chronobiotic' in msg_lower:
-            response = "Chronobiotics are pharmacological agents that modify circadian rhythm parameters. "
-            response += "They include natural compounds like melatonin, synthetic modulators like KL001 and KS15, "
-            response += "and drugs like ramelteon and tasimelteon. They are used for sleep disorders, jet lag, and circadian rhythm disorders."
-        
+            response = "Chronobiotics are pharmacological agents that modify circadian rhythm parameters. They include natural compounds like melatonin, synthetic modulators like KL001 and KS15, and drugs like ramelteon and tasimelteon. They are used for sleep disorders, jet lag, and circadian rhythm disorders."
         elif 'melatonin' in msg_lower:
-            response = "Melatonin is a hormone produced by the pineal gland that regulates sleep-wake cycles. "
-            response += "It acts on MT1 and MT2 receptors in the brain's suprachiasmatic nucleus. "
-            response += "It's commonly used for insomnia, jet lag, and circadian rhythm disorders."
-        
+            response = "Melatonin is a hormone produced by the pineal gland that regulates the sleep-wake cycle. It acts on MT1 and MT2 receptors in the brain's suprachiasmatic nucleus. It is commonly used for insomnia, jet lag, and circadian rhythm disorders."
         else:
-            response = "I'm ChronobioticsAI! I can help you learn about chronobiotic compounds, their molecular targets, "
-            response += "FDA approval status, and research articles. Try asking about melatonin, KL001, or chronobiotics classification."
+            response = "I'm ChronobioticsAI! I can help you learn about chronobiotic compounds, their molecular targets, FDA approval status, and research articles. Try asking about melatonin, KL001, or chronobiotics classification."
         
         def generate():
             words = response.split()
@@ -169,6 +163,7 @@ def chat_stream(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def search_database(request):
+    """Search the chronobiotics database"""
     try:
         data = json.loads(request.body)
         query = data.get('query', '')

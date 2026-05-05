@@ -1,7 +1,3 @@
-/**
- * Chemical Formulas Formatter
- * Converts chemical formulas to display with proper subscripts
- */
 
 // Функция для форматирования химической формулы
 function formatChemicalFormula(formula) {
