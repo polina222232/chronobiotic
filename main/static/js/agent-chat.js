@@ -4,6 +4,29 @@
 
 class AgentChat {
     constructor() {
+        this.messageInput = null;
+        this.sendBtn = null;
+        this.newChatBtn = null;
+        this.clearHistoryBtn = null;
+        this.exportChatBtn = null;
+        this.messagesContainer = null;
+        this.typingIndicator = null;
+        this.editPanel = null;
+        this.editInput = null;
+        this.saveEditBtn = null;
+        this.cancelEditBtn = null;
+        this.currentEditId = null;
+        this.currentEditOriginal = null;
+        this.isLoading = false;
+        this.initialized = false;
+    }
+
+    init() {
+        if (this.initialized) return;
+        
+        console.log('AgentChat initializing...');
+        
+        // Get DOM elements
         this.messageInput = document.getElementById('messageInput');
         this.sendBtn = document.getElementById('sendBtn');
         this.newChatBtn = document.getElementById('newChatBtn');
@@ -15,18 +38,14 @@ class AgentChat {
         this.editInput = document.getElementById('editInput');
         this.saveEditBtn = document.getElementById('saveEditBtn');
         this.cancelEditBtn = document.getElementById('cancelEditBtn');
-        this.currentEditId = null;
-        this.isLoading = false;
-        this.init();
-    }
-
-    init() {
-        console.log('AgentChat initializing...');
+        
         this.setupEventListeners();
         this.loadHistory();
         this.setupSuggestions();
         this.initMobileMenu();
         this.loadSettings();
+        this.initialized = true;
+        console.log('AgentChat initialized successfully');
     }
 
     setupEventListeners() {
@@ -90,14 +109,27 @@ class AgentChat {
     }
 
     setupSuggestions() {
-        document.querySelectorAll('.suggestion').forEach(btn => {
-            btn.addEventListener('click', () => {
-                if (this.messageInput) {
+        // Use event delegation for better performance
+        const suggestionsContainer = document.querySelector('.suggestions');
+        if (suggestionsContainer) {
+            suggestionsContainer.addEventListener('click', (e) => {
+                const btn = e.target.closest('.suggestion');
+                if (btn && this.messageInput) {
                     this.messageInput.value = btn.textContent;
                     this.sendMessage();
                 }
             });
-        });
+        } else {
+            // Fallback to individual buttons
+            document.querySelectorAll('.suggestion').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (this.messageInput) {
+                        this.messageInput.value = btn.textContent;
+                        this.sendMessage();
+                    }
+                });
+            });
+        }
     }
 
     loadSettings() {
@@ -557,4 +589,8 @@ class AgentChat {
 
 document.addEventListener('DOMContentLoaded', () => {
     window.agentChat = new AgentChat();
+    // Initialize after a short delay to ensure all DOM elements are ready
+    setTimeout(() => {
+        window.agentChat.init();
+    }, 100);
 });
