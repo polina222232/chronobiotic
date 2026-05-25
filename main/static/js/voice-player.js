@@ -1,6 +1,4 @@
-//**
- * Voice Player - Text-to-speech with gender and language selection
- */
+
 
 class VoicePlayer {
     constructor() {

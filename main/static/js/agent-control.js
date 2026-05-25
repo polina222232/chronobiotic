@@ -1,6 +1,4 @@
-/**
- * Agent Control - Settings and voice panel management
- */
+
 
 (function() {
     // Ждем полной загрузки DOM

@@ -16,6 +16,7 @@ class AgentChat {
         this.saveEditBtn = document.getElementById('saveEditBtn');
         this.cancelEditBtn = document.getElementById('cancelEditBtn');
         this.currentEditId = null;
+        this.currentEditOriginal = null;
         this.isLoading = false;
         this.init();
     }
@@ -124,6 +125,11 @@ class AgentChat {
         this.showTyping();
         this.isLoading = true;
 
+        // Воспроизводим звук отправки
+        if (window.audioEffects && localStorage.getItem('soundEffects') !== 'false') {
+            window.audioEffects.playSendSound();
+        }
+
         try {
             const useStream = localStorage.getItem('streamResponse') !== 'false';
 
@@ -135,7 +141,6 @@ class AgentChat {
             }
         } catch (error) {
             console.error('Send message error:', error);
-            // Fallback response when API is not available
             const fallbackResponse = this.getFallbackResponse(message);
             this.addMessage('assistant', fallbackResponse);
         }
@@ -225,6 +230,7 @@ class AgentChat {
     }
 
     addMessageEventListeners(messageDiv, role, content) {
+        // Copy button
         const copyBtn = messageDiv.querySelector('.copy-msg');
         if (copyBtn) {
             copyBtn.addEventListener('click', () => {
@@ -233,20 +239,24 @@ class AgentChat {
             });
         }
 
+        // Edit button (user messages only)
         if (role === 'user') {
             const editBtn = messageDiv.querySelector('.edit-msg');
             if (editBtn) {
                 editBtn.addEventListener('click', () => {
+                    console.log('Edit button clicked for message:', messageDiv.dataset.messageId);
                     this.showEditPanel(messageDiv.dataset.messageId, content);
                 });
             }
         }
 
+        // Speak button (assistant messages only)
         if (role === 'assistant') {
             const speakBtn = messageDiv.querySelector('.speak-msg');
-            if (speakBtn && window.voicePlayer) {
+            if (speakBtn) {
                 speakBtn.addEventListener('click', () => {
-                    window.voicePlayer.speak(content);
+                    console.log('Speak button clicked, playing audio');
+                    this.speakText(content);
                 });
             }
 
@@ -259,12 +269,61 @@ class AgentChat {
         }
     }
 
+    speakText(text) {
+        // Очищаем текст от HTML тегов
+        const plainText = text.replace(/<[^>]*>/g, '');
+
+        // Получаем настройки голоса
+        const voiceLang = localStorage.getItem('voiceLanguage') || 'en-US';
+        const voiceSpeed = parseFloat(localStorage.getItem('voiceSpeed') || '1');
+        const voicePitch = parseFloat(localStorage.getItem('voicePitch') || '1');
+        const voiceGender = localStorage.getItem('voiceGender') || 'female';
+
+        // Создаем utterance
+        const utterance = new SpeechSynthesisUtterance(plainText);
+        utterance.lang = voiceLang;
+        utterance.rate = voiceSpeed;
+        utterance.pitch = voicePitch;
+
+        // Пытаемся найти подходящий голос
+        const voices = window.speechSynthesis.getVoices();
+        const langPrefix = voiceLang.split('-')[0];
+        const availableVoices = voices.filter(v => v.lang.startsWith(langPrefix));
+
+        let selectedVoice = null;
+        if (voiceGender === 'female') {
+            selectedVoice = availableVoices.find(v =>
+                v.name.toLowerCase().includes('female') ||
+                v.name.toLowerCase().includes('samantha') ||
+                v.name.toLowerCase().includes('google uk english female')
+            );
+        } else {
+            selectedVoice = availableVoices.find(v =>
+                v.name.toLowerCase().includes('male') ||
+                v.name.toLowerCase().includes('google uk english male')
+            );
+        }
+
+        if (selectedVoice) {
+            utterance.voice = selectedVoice;
+        } else if (availableVoices.length > 0) {
+            utterance.voice = availableVoices[0];
+        }
+
+        // Воспроизводим
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+
+        this.showToast('🔊 Speaking...');
+    }
+
     showEditPanel(messageId, content) {
+        console.log('Showing edit panel for message:', messageId);
         this.currentEditId = messageId;
         this.currentEditOriginal = content;
         if (this.editInput) this.editInput.value = content;
         if (this.editPanel) this.editPanel.style.display = 'flex';
-        this.editInput?.focus();
+        if (this.editInput) this.editInput.focus();
     }
 
     hideEditPanel() {
@@ -278,13 +337,20 @@ class AgentChat {
         const newContent = this.editInput?.value.trim();
         if (!newContent || !this.currentEditId) return;
 
+        console.log('Saving edit for message:', this.currentEditId, newContent);
+
         const messageDiv = this.messagesContainer.querySelector(`[data-message-id="${this.currentEditId}"]`);
         if (messageDiv) {
             const textDiv = messageDiv.querySelector('.message-text');
             if (textDiv) {
-                textDiv.innerHTML = this.formatText(newContent);
+                let formatted = this.escapeHtml(newContent);
+                formatted = formatted.replace(/\n/g, '<br>');
+                formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                formatted = formatted.replace(/`(.*?)`/g, '<code>$1</code>');
+                textDiv.innerHTML = formatted;
             }
 
+            // Удаляем все следующие сообщения (ответы ассистента)
             let nextSibling = messageDiv.nextSibling;
             while (nextSibling) {
                 const toRemove = nextSibling;
@@ -296,6 +362,8 @@ class AgentChat {
 
             this.hideEditPanel();
             this.saveToHistory();
+
+            // Отправляем отредактированное сообщение
             this.messageInput.value = newContent;
             this.sendMessage();
         }
@@ -304,6 +372,7 @@ class AgentChat {
     regenerateMessage(messageId) {
         const messageDiv = this.messagesContainer.querySelector(`[data-message-id="${messageId}"]`);
         if (messageDiv) {
+            // Находим предыдущее сообщение пользователя
             let prev = messageDiv.previousSibling;
             let userMessage = null;
             while (prev) {
@@ -316,6 +385,7 @@ class AgentChat {
 
             if (userMessage) {
                 const userText = userMessage.querySelector('.message-text').innerText;
+                // Удаляем это сообщение и все после него
                 let next = messageDiv;
                 while (next) {
                     const toRemove = next;
@@ -557,4 +627,9 @@ class AgentChat {
 
 document.addEventListener('DOMContentLoaded', () => {
     window.agentChat = new AgentChat();
+
+    // Загружаем голоса для speech synthesis
+    if (window.speechSynthesis) {
+        window.speechSynthesis.getVoices();
+    }
 });

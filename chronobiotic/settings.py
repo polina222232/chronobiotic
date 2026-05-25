@@ -110,3 +110,52 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
+
+# Agent configuration
+AGENT_CONFIG = {
+    'max_workers': 10,
+    'parallel': {
+        'max_concurrent_tasks': 5,
+        'timeout': 30
+    },
+    'aggregation': {
+        'strategy': 'merge',
+        'timeout': 10
+    },
+    'agents': {
+        'chemical_analyzer': {
+            'chem_config': {
+                'cache_enabled': True,
+                'cache_ttl': 3600
+            }
+        },
+        'chat_agent': {
+            'llm_model': 'gpt-4',
+            'max_tokens': 2000,
+            'temperature': 0.7
+        },
+        'chronobiotics_expert': {
+            'knowledge_base': 'chronobiotics_db',
+            'enable_citations': True
+        },
+        'citation_agent': {
+            'style': 'apa',
+            'validate_sources': True
+        }
+    },
+    'monitoring': {
+        'enabled': True,
+        'metrics_interval': 60
+    },
+    'cache': {
+        'enabled': True,
+        'backend': 'redis',
+        'ttl': 3600
+    }
+}
+
+# Celery configuration for async tasks
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json']

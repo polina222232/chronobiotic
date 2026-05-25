@@ -13,5 +13,4 @@ urlpatterns = [
     path('agent-chat/', views.agent_chat, name='agent_chat'),
     path('api/chat/', views.chat_api, name='chat_api'),
     path('api/chat/stream/', views.chat_stream, name='chat_stream'),
-    path('api/search/', views.search_database, name='search_database'),
 ]

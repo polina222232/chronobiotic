@@ -1,7 +1,12 @@
-import logging
-from typing import Dict, Any, Optional, Type
+i  # chronobioticagent/main/agent/agent_manager.py
+"""Agent Manager - Coordinates all agents"""
 
-from .agent_core import BaseAgent, AgentContext, AgentResponse
+import asyncio
+import logging
+from collections import defaultdict
+from typing import Dict, List, Optional
+
+from .agent_core import BaseAgent, AgentStatus, AgentType, AgentMessage, AgentResult
 
 logger = logging.getLogger(__name__)
 
@@ -9,62 +14,157 @@ logger = logging.getLogger(__name__)
 class AgentManager:
     """Central manager for all agents"""
     
-    _instance = None
+    def __init__(self, config: Optional[Dict] = None):
+        self.config = config or {}
+        self.agents: Dict[str, BaseAgent] = {}
+        self.agent_registry: Dict[AgentType, List[str]] = defaultdict(list)
+        self.message_bus: asyncio.Queue = asyncio.Queue()
+        self._running = False
+        self._worker_task = None
     
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance._initialized = False
-        return cls._instance
+    def register_agent(self, agent: BaseAgent):
+        """Register an agent with the manager"""
+        self.agents[agent.name] = agent
+        self.agent_registry[agent.agent_type].append(agent.name)
+        logger.info(f"Registered agent: {agent.name} ({agent.agent_type.value})")
     
-    def __init__(self):
-        if self._initialized:
-            return
-        self._agents: Dict[str, BaseAgent] = {}
-        self._agent_types: Dict[str, Type[BaseAgent]] = {}
-        self._initialized = True
-        logger.info("AgentManager initialized")
-    
-    def register_agent_type(self, name: str, agent_class: Type[BaseAgent]):
-        self._agent_types[name] = agent_class
-        logger.info(f"Registered agent type: {name}")
-    
-    async def create_agent(self, name: str, agent_type: str, config: Optional[Dict] = None) -> BaseAgent:
-        if name in self._agents:
-            raise ValueError(f"Agent {name} already exists")
+    async def start_all(self):
+        """Start all registered agents"""
+        self._running = True
+        self._worker_task = asyncio.create_task(self._message_worker())
         
-        if agent_type not in self._agent_types:
-            raise ValueError(f"Unknown agent type: {agent_type}")
+        for agent in self.agents.values():
+            await agent.start()
         
-        agent_class = self._agent_types[agent_type]
-        agent = agent_class(name, config or {})
-        
-        success = await agent.initialize()
-        if not success:
-            raise RuntimeError(f"Failed to initialize agent {name}")
-        
-        self._agents[name] = agent
-        logger.info(f"Created agent: {name}")
-        return agent
+        logger.info(f"AgentManager started with {len(self.agents)} agents")
     
-    async def get_agent(self, name: str) -> Optional[BaseAgent]:
-        return self._agents.get(name)
+    async def stop_all(self):
+        """Stop all agents"""
+        self._running = False
+        if self._worker_task:
+            self._worker_task.cancel()
+        
+        for agent in self.agents.values():
+            await agent.stop()
+        
+        logger.info("AgentManager stopped")
     
-    async def send_request(self, agent_name: str, request: Any,
-                           context: Optional[AgentContext] = None) -> AgentResponse:
-        agent = self._agents.get(agent_name)
-        if not agent:
-            return AgentResponse(
-                success=False,
-                error=f"Agent {agent_name} not found",
-                agent_name="AgentManager"
+    async def send_to_agent(
+            self,
+            agent_name: str,
+            message: AgentMessage,
+            timeout_seconds: float = 30.0
+    ) -> Optional[AgentResult]:
+        """Send message to specific agent"""
+        if agent_name not in self.agents:
+            raise ValueError(f"Agent {agent_name} not found")
+        
+        agent = self.agents[agent_name]
+        if agent.status != AgentStatus.RUNNING:
+            raise RuntimeError(f"Agent {agent_name} is not running")
+        
+        # Create future for response
+        response_future = asyncio.Future()
+        
+        # Add to agent's queue
+        message.metadata["response_future"] = response_future
+        await agent._task_queue.put(message)
+        
+        # Wait for response with timeout
+        try:
+            result = await asyncio.wait_for(response_future, timeout_seconds)
+            return result
+        except asyncio.TimeoutError:
+            logger.error(f"Timeout waiting for response from {agent_name}")
+            return None
+    
+    async def broadcast(
+            self,
+            message: AgentMessage,
+            agent_type: Optional[AgentType] = None
+    ):
+        """Broadcast message to all agents or specific type"""
+        targets = []
+        if agent_type:
+            targets = self.agent_registry.get(agent_type, [])
+        else:
+            targets = list(self.agents.keys())
+        
+        for agent_name in targets:
+            await self.send_to_agent(agent_name, message)
+    
+    async def _message_worker(self):
+        """Process messages on the message bus"""
+        while self._running:
+            try:
+                message = await self.message_bus.get()
+                # Route message to appropriate agent(s)
+                if recipient := message.recipient:
+                    await self.send_to_agent(recipient, message)
+                else:
+                    await self.broadcast(message)
+            except asyncio.CancelledError:
+                break
+            except Exception as e:
+                logger.error(f"Message worker error: {e}")
+    
+    def get_agent_status(self) -> Dict[str, str]:
+        """Get status of all agents"""
+        return {name: agent.status.value for name, agent in self.agents.items()}
+    
+    async def execute_pipeline(
+            self,
+            agents: List[str],
+            initial_message: AgentMessage
+    ) -> List[AgentResult]:
+        """Execute agents in sequence (pipeline)"""
+        results = []
+        current_message = initial_message
+        
+        for agent_name in agents:
+            result = await self.send_to_agent(agent_name, current_message)
+            results.append(result)
+            
+            if not result or not result.success:
+                break
+            
+            # Pass result as next message
+            current_message = AgentMessage(
+                sender=agent_name,
+                content=result.data,
+                correlation_id=initial_message.correlation_id
             )
-        return await agent.process(request, context)
+        
+        return results
     
-    async def get_all_statuses(self) -> Dict[str, Dict[str, Any]]:
-        return {name: agent.get_status() for name, agent in self._agents.items()}
-    
-    async def shutdown_all(self):
-        logger.info("Shutting down all agents...")
-        self._agents.clear()
-        logger.info("All agents shutdown complete")
+    async def execute_parallel(
+            self,
+            agent_messages: List[tuple],
+            max_concurrent: int = 5
+    ) -> List[AgentResult]:
+        """Execute multiple agent calls in parallel"""
+        semaphore = asyncio.Semaphore(max_concurrent)
+        
+        async def bounded_send(agent_name: str, message: AgentMessage):
+            async with semaphore:
+                return await self.send_to_agent(agent_name, message)
+        
+        tasks = [
+            bounded_send(agent_name, message)
+            for agent_name, message in agent_messages
+        ]
+        
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        # Convert exceptions to AgentResult
+        processed_results = []
+        for r in results:
+            if isinstance(r, Exception):
+                processed_results.append(AgentResult(
+                    success=False,
+                    error=str(r)
+                ))
+            else:
+                processed_results.append(r)
+        
+        return processed_results

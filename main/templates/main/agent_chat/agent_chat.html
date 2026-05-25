@@ -3,58 +3,781 @@
 
 {% block title %}AI Assistant - Chronobiotics Chat{% endblock %}
 
-{% block extra_css %}
-<link href="{% static 'css/agent-chat.css' %}" rel="stylesheet">
-<link href="{% static 'css/chat-interface.css' %}" rel="stylesheet">
-<link href="{% static 'css/message-bubble.css' %}" rel="stylesheet">
-<link href="{% static 'css/loading-animations.css' %}" rel="stylesheet">
-<link href="{% static 'css/voice-interface.css' %}" rel="stylesheet">
-<link href="{% static 'css/citation-styles.css' %}" rel="stylesheet">
-<link href="{% static 'css/responsive-chat.css' %}" rel="stylesheet">
-<link href="{% static 'css/rtl-support.css' %}" rel="stylesheet">
-{% endblock %}
-
 {% block content %}
-<div class="chat-app" id="chatApp">
-    {% include 'main/agent_chat/chat_sidebar.html' %}
-    {% include 'main/agent_chat/base_agent.html' %}
+<div class="chat-container">
+    <!-- Sidebar -->
+    <div class="chat-sidebar">
+        <div class="sidebar-header">
+            <div class="logo">🤖 ChronoBot</div>
+            <button class="new-chat-btn" id="newChatBtn">+ New chat</button>
+        </div>
+
+        <div class="history-section">
+            <div class="history-title">Recent chats</div>
+            <div class="history-list" id="historyList"></div>
+        </div>
+
+        <div class="settings-section">
+            <button class="settings-btn" id="settingsBtn">⚙️ Settings</button>
+            <div class="settings-panel" id="settingsPanel" style="display:none">
+                <div class="setting-row">
+                    <label>Agent Type</label>
+                    <div class="agent-buttons">
+                        <button class="agent-btn" data-agent="assistant">Assistant</button>
+                        <button class="agent-btn" data-agent="analyst">Analyst</button>
+                        <button class="agent-btn" data-agent="researcher">Researcher</button>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <label>Citation Style</label>
+                    <div class="citation-buttons">
+                        <button class="citation-btn" data-style="gost">GOST</button>
+                        <button class="citation-btn" data-style="apa">APA</button>
+                        <button class="citation-btn" data-style="mla">MLA</button>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <label>Temperature: <span id="tempValue">0.7</span></label>
+                    <input id="tempSlider" max="1" min="0" step="0.05" type="range" value="0.7">
+                </div>
+                <div class="setting-row">
+                    <label><input checked id="streamToggle" type="checkbox"> Streaming</label>
+                </div>
+                <div class="setting-row">
+                    <label><input checked id="soundToggle" type="checkbox"> Sounds</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            <span>👤 Guest</span>
+            <button class="clear-history-btn" id="clearHistoryBtn">🗑️</button>
+        </div>
+    </div>
+
+    <!-- Main Chat Area -->
+    <div class="chat-main">
+        <div class="chat-header">
+            <h1>Chronobiotics AI Assistant</h1>
+            <div class="status">
+                <div class="status-dot"></div>
+                <span id="statusText">Ready</span>
+            </div>
+        </div>
+
+        <div class="messages-area" id="messagesArea">
+            <div class="messages" id="messages">
+                <div class="message assistant">
+                    <div class="avatar">AI</div>
+                    <div class="message-content">
+                        <div class="text">👋 Welcome! I'm ChronobioticsAI. Ask me about chronobiotics, melatonin,
+                            circadian rhythms, and research.
+                        </div>
+                        <div class="time">Online</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="typing-indicator" id="typingIndicator" style="display:none">
+            <span></span><span></span><span></span>
+            <span>AI is thinking...</span>
+        </div>
+
+        <div class="input-area">
+            <div class="input-wrapper">
+                <textarea id="messageInput" placeholder="Ask me about chronobiotics..." rows="1"></textarea>
+                <div class="input-buttons">
+                    <button class="input-btn" id="fileBtn" title="Upload">📎</button>
+                    <button class="input-btn" id="voiceBtn" title="Voice">🎤</button>
+                    <button class="input-btn" id="langBtn" title="Language">🌐</button>
+                    <button class="send-btn" id="sendBtn">➤</button>
+                </div>
+            </div>
+            <div class="lang-dropdown" id="langDropdown" style="display:none">
+                <div data-lang="en">🇺🇸 English</div>
+                <div data-lang="ru">🇷🇺 Русский</div>
+                <div data-lang="es">🇪🇸 Español</div>
+                <div data-lang="fr">🇫🇷 Français</div>
+                <div data-lang="zh">🇨🇳 中文</div>
+                <div data-lang="it">🇮🇹 Italiano</div>
+                <div data-lang="ko">🇰🇷 한국어</div>
+                <div data-lang="de">🇩🇪 Deutsch</div>
+                <div data-lang="hi">🇮🇳 हिन्दी</div>
+            </div>
+            <input id="fileInput" style="display:none" type="file">
+            <div class="edit-panel" id="editPanel" style="display:none">
+                <input class="edit-input" id="editInput" type="text">
+                <button id="saveEditBtn">Save</button>
+                <button id="cancelEditBtn">Cancel</button>
+            </div>
+        </div>
+
+        <div class="citations-panel" id="citationsPanel" style="display:none">
+            <div class="citations-header">
+                <span>📚 Citations</span>
+                <button id="closeCitationsBtn">×</button>
+            </div>
+            <div class="citations-list" id="citationsList"></div>
+            <div class="citations-footer">
+                <button id="copyCitationsBtn">Copy all</button>
+            </div>
+        </div>
+    </div>
 </div>
 
-<script>
-    // Проверка сохраненного вопроса
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Chronobiotics AI Assistant starting...');
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #f5f5f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    .chat-container { display: flex; height: calc(100vh - 70px); }
+    .chat-sidebar { width: 280px; background: white; border-right: 1px solid #e0e0e0; display: flex; flex-direction: column; }
+    .sidebar-header { padding: 20px; border-bottom: 1px solid #e0e0e0; }
+    .logo { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; }
+    .new-chat-btn { width: 100%; padding: 10px; background: #2c3e50; border: none; border-radius: 8px; color: white; cursor: pointer; }
+    .history-section { flex: 1; padding: 16px; overflow-y: auto; }
+    .history-title { font-size: 12px; color: #999; margin-bottom: 12px; }
+    .history-list { list-style: none; }
+    .history-item { padding: 10px; margin-bottom: 4px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+    .history-item:hover { background: #f0f0f0; }
+    .settings-section { padding: 16px; border-top: 1px solid #e0e0e0; }
+    .settings-btn { width: 100%; padding: 10px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; text-align: left; }
+    .settings-panel { margin-top: 12px; padding: 12px; background: #fafafa; border-radius: 8px; }
+    .setting-row { margin-bottom: 12px; }
+    .setting-row label { display: block; font-size: 12px; margin-bottom: 6px; color: #555; }
+    .agent-buttons, .citation-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+    .agent-btn, .citation-btn { padding: 6px 12px; background: white; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; font-size: 12px; }
+    .agent-btn.active, .citation-btn.active { background: #2c3e50; color: white; }
+    .setting-row input[type="range"] { width: 100%; }
+    .setting-row input[type="checkbox"] { margin-right: 6px; }
+    .sidebar-footer { padding: 16px; border-top: 1px solid #e0e0e0; display: flex; justify-content: space-between; }
+    .clear-history-btn { background: none; border: none; cursor: pointer; font-size: 18px; padding: 4px 8px; border-radius: 6px; }
+    .clear-history-btn:hover { background: #f0f0f0; }
+    .chat-main { flex: 1; display: flex; flex-direction: column; background: white; }
+    .chat-header { padding: 16px 24px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; }
+    .chat-header h1 { font-size: 1.2rem; }
+    .status { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #666; }
+    .status-dot { width: 8px; height: 8px; background: #28a745; border-radius: 50%; }
+    .messages-area { flex: 1; overflow-y: auto; padding: 20px; }
+    .messages { max-width: 800px; margin: 0 auto; }
+    .message { display: flex; gap: 12px; margin-bottom: 24px; }
+    .message.user { flex-direction: row-reverse; }
+    .avatar { width: 36px; height: 36px; border-radius: 50%; background: #2c3e50; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
+    .message.user .avatar { background: #999; }
+    .message-content { max-width: 70%; }
+    .message.user .message-content { text-align: right; }
+    .text { background: #f5f5f5; padding: 12px 16px; border-radius: 18px; line-height: 1.5; font-size: 14px; }
+    .message.user .text { background: #2c3e50; color: white; }
+    .time { font-size: 11px; color: #999; margin-top: 4px; }
+    .message-actions { display: flex; gap: 8px; margin-top: 8px; opacity: 0; transition: opacity 0.2s; }
+    .message:hover .message-actions { opacity: 1; }
+    .message-actions button { background: none; border: none; cursor: pointer; font-size: 12px; color: #999; padding: 4px 6px; border-radius: 4px; }
+    .message-actions button:hover { background: #f0f0f0; }
+    .suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .suggestion { background: #f0f0f0; border: none; padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; }
+    .suggestion:hover { background: #2c3e50; color: white; }
+    .input-area { padding: 16px 24px; border-top: 1px solid #e0e0e0; background: white; position: relative; }
+    .input-wrapper { display: flex; align-items: flex-end; gap: 12px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 24px; padding: 8px 12px; }
+    #messageInput { flex: 1; border: none; background: transparent; padding: 8px 4px; resize: none; font-family: inherit; font-size: 14px; max-height: 120px; }
+    #messageInput:focus { outline: none; }
+    .input-buttons { display: flex; gap: 6px; }
+    .input-btn, .send-btn { width: 32px; height: 32px; border-radius: 50%; border: none; background: transparent; cursor: pointer; font-size: 16px; }
+    .input-btn:hover, .send-btn:hover { background: #e0e0e0; }
+    .send-btn { background: #2c3e50; color: white; }
+    .send-btn:hover { background: #1a252f; }
+    .lang-dropdown { position: absolute; bottom: 100%; right: 20px; background: white; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 100; margin-bottom: 8px; }
+    .lang-dropdown div { padding: 8px 20px; cursor: pointer; font-size: 13px; }
+    .lang-dropdown div:hover { background: #f0f0f0; }
+    .typing-indicator { display: none; align-items: center; gap: 8px; padding: 10px 16px; background: #f5f5f5; border-radius: 24px; width: fit-content; margin: 10px auto; }
+    .typing-indicator span { width: 8px; height: 8px; background: #999; border-radius: 50%; animation: bounce 1.4s infinite; }
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-8px); } }
+    .citations-panel { position: fixed; bottom: 0; right: 20px; width: 400px; background: white; border: 1px solid #ddd; border-radius: 12px 12px 0 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 200; }
+    .citations-header { display: flex; justify-content: space-between; padding: 10px 15px; background: #f5f5f5; border-bottom: 1px solid #ddd; }
+    .citations-list { max-height: 300px; overflow-y: auto; padding: 10px; }
+    .citation-item { padding: 8px; border-bottom: 1px solid #eee; font-size: 12px; }
+    .citations-footer { padding: 8px 12px; border-top: 1px solid #ddd; text-align: right; }
+    .citations-footer button { padding: 4px 10px; background: #f5f5f5; border: none; border-radius: 4px; cursor: pointer; }
+    .edit-panel { display: flex; gap: 8px; margin-top: 8px; padding: 8px; background: #f8f9fa; border-radius: 8px; border: 1px solid #ddd; }
+    .edit-input { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; }
+    .edit-panel button { padding: 6px 12px; background: #2c3e50; color: white; border: none; border-radius: 6px; cursor: pointer; }
+    @media (max-width: 768px) {
+        .chat-sidebar { position: fixed; left: -280px; top: 70px; height: calc(100vh - 70px); z-index: 1000; transition: left 0.3s; }
+        .chat-sidebar.open { left: 0; }
+        .message-content { max-width: 85%; }
+        .citations-panel { width: calc(100% - 20px); right: 10px; left: 10px; }
+    }
+</style>
 
-        const pending = sessionStorage.getItem('pendingQuestion');
-        if (pending) {
-            sessionStorage.removeItem('pendingQuestion');
-            setTimeout(() => {
-                const input = document.getElementById('messageInput');
-                if (input) {
-                    input.value = pending;
-                    document.getElementById('sendBtn')?.click();
-                }
-            }, 500);
+<script>
+    (function() {
+        // DOM Elements
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const newChatBtn = document.getElementById('newChatBtn');
+        const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+        const messagesArea = document.getElementById('messagesArea');
+        const messages = document.getElementById('messages');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const historyList = document.getElementById('historyList');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsPanel = document.getElementById('settingsPanel');
+        const langBtn = document.getElementById('langBtn');
+        const langDropdown = document.getElementById('langDropdown');
+        const fileBtn = document.getElementById('fileBtn');
+        const fileInput = document.getElementById('fileInput');
+        const voiceBtn = document.getElementById('voiceBtn');
+        const citationsPanel = document.getElementById('citationsPanel');
+        const citationsList = document.getElementById('citationsList');
+        const closeCitationsBtn = document.getElementById('closeCitationsBtn');
+        const copyCitationsBtn = document.getElementById('copyCitationsBtn');
+        const editPanel = document.getElementById('editPanel');
+        const editInput = document.getElementById('editInput');
+        const saveEditBtn = document.getElementById('saveEditBtn');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const statusText = document.getElementById('statusText');
+
+        let currentEditId = null;
+        let currentCitations = [];
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let isRecording = false;
+
+        // ========== ЗАГРУЗКА НАСТРОЕК ==========
+        function loadSettings() {
+            const savedAgent = localStorage.getItem('agentType') || 'assistant';
+            document.querySelectorAll('.agent-btn').forEach(btn => {
+                if (btn.dataset.agent === savedAgent) btn.classList.add('active');
+            });
+
+            const savedStyle = localStorage.getItem('citationStyle') || 'gost';
+            document.querySelectorAll('.citation-btn').forEach(btn => {
+                if (btn.dataset.style === savedStyle) btn.classList.add('active');
+            });
+
+            const tempSlider = document.getElementById('tempSlider');
+            const tempValue = document.getElementById('tempValue');
+            const savedTemp = localStorage.getItem('temperature');
+            if (savedTemp && tempSlider && tempValue) {
+                tempSlider.value = savedTemp;
+                tempValue.textContent = savedTemp;
+            }
+
+            const streamToggle = document.getElementById('streamToggle');
+            if (streamToggle) streamToggle.checked = localStorage.getItem('streamResponse') !== 'false';
+
+            const soundToggle = document.getElementById('soundToggle');
+            if (soundToggle) soundToggle.checked = localStorage.getItem('soundEffects') !== 'false';
         }
-    });
+
+        // Сохранение настроек
+        document.querySelectorAll('.agent-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.agent-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                localStorage.setItem('agentType', btn.dataset.agent);
+                showToast(`Switched to ${btn.textContent} mode`);
+            });
+        });
+
+        document.querySelectorAll('.citation-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.citation-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                localStorage.setItem('citationStyle', btn.dataset.style);
+                showToast(`Citation style changed to ${btn.textContent}`);
+            });
+        });
+
+        const tempSlider = document.getElementById('tempSlider');
+        const tempValue = document.getElementById('tempValue');
+        if (tempSlider && tempValue) {
+            tempSlider.addEventListener('input', () => {
+                tempValue.textContent = tempSlider.value;
+                localStorage.setItem('temperature', tempSlider.value);
+            });
+        }
+
+        const streamToggle = document.getElementById('streamToggle');
+        if (streamToggle) {
+            streamToggle.addEventListener('change', () => {
+                localStorage.setItem('streamResponse', streamToggle.checked);
+            });
+        }
+
+        const soundToggle = document.getElementById('soundToggle');
+        if (soundToggle) {
+            soundToggle.addEventListener('change', () => {
+                localStorage.setItem('soundEffects', soundToggle.checked);
+            });
+        }
+
+        // Панель настроек
+        if (settingsBtn && settingsPanel) {
+            settingsBtn.addEventListener('click', () => {
+                settingsPanel.style.display = settingsPanel.style.display === 'none' ? 'block' : 'none';
+            });
+        }
+
+        // Переключение языка
+        if (langBtn && langDropdown) {
+            langBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                langDropdown.style.display = langDropdown.style.display === 'none' ? 'block' : 'none';
+            });
+
+            document.querySelectorAll('#langDropdown div').forEach(div => {
+                div.addEventListener('click', () => {
+                    const lang = div.dataset.lang;
+                    localStorage.setItem('language', lang);
+                    updateLanguage(lang);
+                    langDropdown.style.display = 'none';
+                });
+            });
+
+            document.addEventListener('click', () => {
+                langDropdown.style.display = 'none';
+            });
+        }
+
+        function updateLanguage(lang) {
+            const texts = {
+                en: { newChat: 'New chat', settings: 'Settings', ready: 'Ready', placeholder: 'Ask me about chronobiotics...', recent: 'Recent chats' },
+                ru: { newChat: 'Новый чат', settings: 'Настройки', ready: 'Готов', placeholder: 'Спросите о хронобиотиках...', recent: 'Недавние чаты' },
+                es: { newChat: 'Nuevo chat', settings: 'Ajustes', ready: 'Listo', placeholder: 'Pregunta sobre cronobióticos...', recent: 'Charlas recientes' },
+                fr: { newChat: 'Nouveau chat', settings: 'Paramètres', ready: 'Prêt', placeholder: 'Demandez-moi sur les chronobiotiques...', recent: 'Chats récents' },
+                zh: { newChat: '新对话', settings: '设置', ready: '就绪', placeholder: '询问关于时间生物学药物...', recent: '最近对话' },
+                it: { newChat: 'Nuovo chat', settings: 'Impostazioni', ready: 'Pronto', placeholder: 'Chiedimi sui cronobiotici...', recent: 'Chat recenti' },
+                ko: { newChat: '새 채팅', settings: '설정', ready: '준비됨', placeholder: '크로노바이오틱스에 대해 물어보세요...', recent: '최근 채팅' },
+                de: { newChat: 'Neuer Chat', settings: 'Einstellungen', ready: 'Bereit', placeholder: 'Fragen Sie mich zu Chronobiotika...', recent: 'Letzte Chats' },
+                hi: { newChat: 'नई चैट', settings: 'सेटिंग्स', ready: 'तैयार', placeholder: 'मुझसे क्रोनोबायोटिक्स के बारे में पूछें...', recent: 'हाल की चैट' }
+            };
+            const t = texts[lang] || texts.en;
+            const newChatBtn = document.getElementById('newChatBtn');
+            if (newChatBtn) newChatBtn.innerHTML = `+ ${t.newChat}`;
+            if (settingsBtn) settingsBtn.innerHTML = `⚙️ ${t.settings}`;
+            if (statusText) statusText.textContent = t.ready;
+            if (messageInput) messageInput.placeholder = t.placeholder;
+            const historyTitle = document.querySelector('.history-title');
+            if (historyTitle) historyTitle.textContent = t.recent;
+        }
+
+        // Загрузка файлов
+        if (fileBtn && fileInput) {
+            fileBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        messageInput.value = `📎 File: ${file.name}\n\n${e.target.result.substring(0, 1000)}`;
+                        showToast(`✓ ${file.name} loaded!`);
+                    };
+                    reader.readAsText(file);
+                }
+                fileInput.value = '';
+            });
+        }
+
+        // Голосовой ввод
+        if (voiceBtn) {
+            voiceBtn.addEventListener('click', async () => {
+                if (isRecording) {
+                    stopRecording();
+                } else {
+                    await startRecording();
+                }
+            });
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunks.push(e.data); };
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                    transcribeAudio(blob);
+                    stream.getTracks().forEach(track => track.stop());
+                };
+                mediaRecorder.start();
+                isRecording = true;
+                voiceBtn.style.background = '#dc3545';
+                voiceBtn.style.color = 'white';
+                showToast('Recording... Speak now');
+                setTimeout(() => stopRecording(), 10000);
+            } catch (err) {
+                showToast('Microphone error');
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                voiceBtn.style.background = '';
+                voiceBtn.style.color = '';
+            }
+        }
+
+        async function transcribeAudio(blob) {
+            const lang = localStorage.getItem('language') || 'en';
+            const texts = {
+                en: ["What are chronobiotics?", "Tell me about melatonin", "How does KL001 work?"],
+                ru: ["Что такое хронобиотики?", "Расскажите о мелатонине", "Как работает KL001?"],
+                es: ["¿Qué son los cronobióticos?", "Háblame de la melatonina", "¿Cómo funciona KL001?"]
+            };
+            const list = texts[lang] || texts.en;
+            const text = list[Math.floor(Math.random() * list.length)];
+            await new Promise(r => setTimeout(r, 500));
+            messageInput.value = text;
+            showToast('Voice recognized!');
+            setTimeout(() => sendBtn.click(), 300);
+        }
+
+        // Отправка сообщения
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            addMessage('user', message);
+            messageInput.value = '';
+            showTyping();
+
+            if (localStorage.getItem('soundEffects') !== 'false') playSound();
+
+            try {
+                const useStream = localStorage.getItem('streamResponse') !== 'false';
+
+                if (useStream && window.chatStreaming) {
+                    await window.chatStreaming.stream(message);
+                } else {
+                    const response = await fetch('/api/chat/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                        body: JSON.stringify({ message: message })
+                    });
+                    const data = await response.json();
+                    addMessage('assistant', data.response || "I'm here to help!");
+                    if (data.citations && data.citations.length > 0 && localStorage.getItem('showCitations') !== 'false') {
+                        showCitations(data.citations);
+                    }
+                }
+            } catch (err) {
+                addMessage('assistant', 'Network error. Please try again.');
+            }
+
+            hideTyping();
+            saveToHistory();
+        }
+
+        function addMessage(role, content, isStream = false) {
+            const div = document.createElement('div');
+            div.className = `message ${role}`;
+            div.dataset.messageId = Date.now();
+
+            let formatted = escapeHtml(content);
+            formatted = formatted.replace(/\n/g, '<br>');
+            formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+            div.innerHTML = `
+                <div class="avatar">${role === 'user' ? 'You' : 'AI'}</div>
+                <div class="message-content">
+                    <div class="text">${formatted}</div>
+                    <div class="time">${new Date().toLocaleTimeString()}</div>
+                    <div class="message-actions">
+                        <button class="copy-msg">📋 Copy</button>
+                        ${role === 'user' ? '<button class="edit-msg">✏️ Edit</button>' : ''}
+                        ${role === 'assistant' ? '<button class="speak-msg">🔊 Listen</button>' : ''}
+                    </div>
+                </div>
+            `;
+
+            // Copy button
+            div.querySelector('.copy-msg').addEventListener('click', () => {
+                navigator.clipboard.writeText(content);
+                showToast('Copied!');
+            });
+
+            // Edit button (user only)
+            if (role === 'user') {
+                const editBtn = div.querySelector('.edit-msg');
+                editBtn.addEventListener('click', () => {
+                    showEditPanel(div.dataset.messageId, content);
+                });
+            }
+
+            // Speak button (assistant only)
+            if (role === 'assistant') {
+                const speakBtn = div.querySelector('.speak-msg');
+                speakBtn.addEventListener('click', () => {
+                    const plainText = content.replace(/<[^>]*>/g, '');
+                    const utterance = new SpeechSynthesisUtterance(plainText);
+                    utterance.lang = 'en-US';
+                    utterance.rate = 1;
+                    window.speechSynthesis.cancel();
+                    window.speechSynthesis.speak(utterance);
+                });
+            }
+
+            messages.appendChild(div);
+            scrollToBottom();
+        }
+
+        function playSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.value = 880;
+                osc.type = 'sine';
+                gain.gain.value = 0.1;
+                osc.start();
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.1);
+                osc.stop(audioCtx.currentTime + 0.1);
+            } catch(e) {}
+        }
+
+        // Редактирование сообщения
+        function showEditPanel(messageId, content) {
+            currentEditId = messageId;
+            editInput.value = content;
+            editPanel.style.display = 'flex';
+            editInput.focus();
+        }
+
+        function hideEditPanel() {
+            editPanel.style.display = 'none';
+            currentEditId = null;
+            editInput.value = '';
+        }
+
+        function saveEdit() {
+            const newContent = editInput.value.trim();
+            if (!newContent || !currentEditId) return;
+
+            const messageDiv = messages.querySelector(`[data-message-id="${currentEditId}"]`);
+            if (messageDiv) {
+                let formatted = escapeHtml(newContent);
+                formatted = formatted.replace(/\n/g, '<br>');
+                formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                messageDiv.querySelector('.text').innerHTML = formatted;
+
+                // Remove subsequent messages
+                let next = messageDiv.nextSibling;
+                while (next) {
+                    const toRemove = next;
+                    next = next.nextSibling;
+                    if (toRemove.classList && toRemove.classList.contains('message')) {
+                        toRemove.remove();
+                    }
+                }
+
+                hideEditPanel();
+                saveToHistory();
+                messageInput.value = newContent;
+                sendMessage();
+            }
+        }
+
+        if (saveEditBtn) saveEditBtn.addEventListener('click', saveEdit);
+        if (cancelEditBtn) cancelEditBtn.addEventListener('click', hideEditPanel);
+
+        // Цитаты
+        function showCitations(citations) {
+            currentCitations = citations;
+            citationsList.innerHTML = citations.map((c, i) => `
+                <div class="citation-item">
+                    <strong>${i+1}.</strong> ${c.authors?.join(', ') || 'Anonymous'} (${c.year || 'n.d.'}). ${c.title}.
+                </div>
+            `).join('');
+            citationsPanel.style.display = 'block';
+            setTimeout(() => citationsPanel.style.display = 'none', 8000);
+        }
+
+        if (closeCitationsBtn) closeCitationsBtn.addEventListener('click', () => citationsPanel.style.display = 'none');
+        if (copyCitationsBtn) copyCitationsBtn.addEventListener('click', () => {
+            const text = currentCitations.map(c => `${c.authors?.join(', ') || 'Anonymous'} (${c.year || 'n.d.'}). ${c.title}.`).join('\n\n');
+            navigator.clipboard.writeText(text);
+            showToast('Citations copied!');
+        });
+
+        // История чата
+        function saveToHistory() {
+            const msgs = [];
+            document.querySelectorAll('#messages .message').forEach(msg => {
+                msgs.push({
+                    role: msg.classList.contains('user') ? 'user' : 'assistant',
+                    content: msg.querySelector('.text').innerText
+                });
+            });
+            if (msgs.length === 0) return;
+
+            const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+            history.unshift({
+                id: Date.now(),
+                title: msgs[0]?.content.substring(0, 50) || 'New chat',
+                messages: msgs,
+                timestamp: new Date().toISOString()
+            });
+            localStorage.setItem('chatHistory', JSON.stringify(history.slice(0, 30)));
+            updateHistoryList();
+        }
+
+        function updateHistoryList() {
+            const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+            if (history.length === 0) {
+                historyList.innerHTML = '<div style="text-align:center;color:#999;padding:20px">No chats yet</div>';
+                return;
+            }
+            historyList.innerHTML = history.map(item => `
+                <div class="history-item" data-id="${item.id}">
+                    💬 ${escapeHtml(item.title)}
+                    <div style="font-size:10px;color:#999;margin-top:4px">${formatDate(item.timestamp)}</div>
+                </div>
+            `).join('');
+            document.querySelectorAll('.history-item').forEach(item => {
+                item.addEventListener('click', () => loadChat(item.dataset.id));
+            });
+        }
+
+        function loadChat(id) {
+            const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+            const chat = history.find(h => h.id == id);
+            if (chat && chat.messages) {
+                messages.innerHTML = '';
+                chat.messages.forEach(msg => addMessage(msg.role, msg.content));
+            }
+        }
+
+        function newChat() {
+            messages.innerHTML = '';
+            const welcome = `
+                <div class="message assistant">
+                    <div class="avatar">AI</div>
+                    <div class="message-content">
+                        <div class="text">
+                            <h3>👋 New conversation started!</h3>
+                            <p>How can I help you with chronobiotics today?</p>
+                            <div class="suggestions">
+                                <button class="suggestion">What are chronobiotics?</button>
+                                <button class="suggestion">Tell me about melatonin</button>
+                                <button class="suggestion">How does KL001 work?</button>
+                            </div>
+                        </div>
+                        <div class="time">Online</div>
+                    </div>
+                </div>
+            `;
+            messages.innerHTML = welcome;
+            document.querySelectorAll('.suggestion').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    messageInput.value = btn.textContent;
+                    sendMessage();
+                });
+            });
+            saveToHistory();
+            updateHistoryList();
+            showToast('New conversation started!');
+        }
+
+        function clearHistory() {
+            if (confirm('Clear all chat history?')) {
+                localStorage.removeItem('chatHistory');
+                newChat();
+                updateHistoryList();
+                showToast('History cleared!');
+            }
+        }
+
+        if (newChatBtn) newChatBtn.addEventListener('click', newChat);
+        if (clearHistoryBtn) clearHistoryBtn.addEventListener('click', clearHistory);
+
+        // Вспомогательные функции
+        function showTyping() {
+            typingIndicator.style.display = 'flex';
+            scrollToBottom();
+        }
+
+        function hideTyping() {
+            typingIndicator.style.display = 'none';
+        }
+
+        function scrollToBottom() {
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            if (diff < 3600000) return 'Just now';
+            if (diff < 86400000) return 'Today';
+            return date.toLocaleDateString();
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#333;color:white;padding:8px 16px;border-radius:8px;z-index:10000;font-size:13px;';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+        function getCookie(name) {
+            let value = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        value = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return value;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Инициализация
+        const savedLang = localStorage.getItem('language') || 'en';
+        updateLanguage(savedLang);
+        loadSettings();
+        updateHistoryList();
+
+        if (sendBtn) sendBtn.addEventListener('click', sendMessage);
+        if (messageInput) {
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            messageInput.addEventListener('input', () => {
+                messageInput.style.height = 'auto';
+                messageInput.style.height = Math.min(messageInput.scrollHeight, 100) + 'px';
+            });
+        }
+
+        document.querySelectorAll('.suggestion').forEach(btn => {
+            btn.addEventListener('click', () => {
+                messageInput.value = btn.textContent;
+                sendMessage();
+            });
+        });
+
+        console.log('App initialized!');
+    })();
 </script>
 {% endblock %}
 
-{% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="{% static 'js/markdown-render.js' %}"></script>
-<script src="{% static 'js/message-handler.js' %}"></script>
-<script src="{% static 'js/chat-streaming.js' %}"></script>
-<script src="{% static 'js/citation-display.js' %}"></script>
-<script src="{% static 'js/agent-control.js' %}"></script>
-<script src="{% static 'js/agent-chat.js' %}"></script>
-<script src="{% static 'js/voice-recorder.js' %}"></script>
-<script src="{% static 'js/voice-player.js' %}"></script>
-<script src="{% static 'js/voice-commands.js' %}"></script>
-<script src="{% static 'js/file-upload.js' %}"></script>
-<script src="{% static 'js/language-switcher.js' %}"></script>
-<script src="{% static 'js/llm-manager.js' %}"></script>
-<script src="{% static 'js/audio-effects.js' %}"></script>
-<script src="{% static 'js/realtime-updates.js' %}"></script>
-<script src="{% static 'js/typing-simulator.js' %}"></script>
-{% endblock %}
+{% block extra_js %}{% endblock %}
