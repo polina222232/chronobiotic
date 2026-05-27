@@ -1,0 +1,219 @@
+/* RTL Support - Right-to-Left Language Support */
+
+/* ============================================
+   Base RTL Styles
+   ============================================ */
+
+[dir="rtl"] {
+    text-align: right;
+}
+
+/* Sidebar */
+[dir="rtl"] .chat-sidebar {
+    border-right: none;
+    border-left: 1px solid #e5e8eb;
+}
+
+[dir="rtl"] .sidebar-header {
+    text-align: right;
+}
+
+[dir="rtl"] .logo {
+    flex-direction: row-reverse;
+}
+
+/* Messages */
+[dir="rtl"] .message {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .message.user {
+    flex-direction: row;
+}
+
+[dir="rtl"] .message-content {
+    text-align: right;
+}
+
+[dir="rtl"] .message.user .message-content {
+    text-align: left;
+}
+
+[dir="rtl"] .message-text ul,
+[dir="rtl"] .message-text ol {
+    padding-right: 20px;
+    padding-left: 0;
+}
+
+[dir="rtl"] .message-text blockquote {
+    border-left: none;
+    border-right: 3px solid #d0d7de;
+    padding-left: 0;
+    padding-right: 12px;
+}
+
+/* Input Area */
+[dir="rtl"] .input-actions {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .input-wrapper {
+    flex-direction: row-reverse;
+}
+
+/* History */
+[dir="rtl"] .history-item {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .history-search svg {
+    left: auto;
+    right: 10px;
+}
+
+[dir="rtl"] .history-search input {
+    padding: 8px 32px 8px 12px;
+}
+
+/* Citations */
+[dir="rtl"] .citation-item {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .citation-number {
+    margin-left: 10px;
+    margin-right: 0;
+}
+
+/* Settings */
+[dir="rtl"] .settings-toggle {
+    flex-direction: row-reverse;
+    justify-content: space-between;
+}
+
+[dir="rtl"] .setting-group {
+    text-align: right;
+}
+
+[dir="rtl"] .setting-checkbox {
+    text-align: right;
+}
+
+[dir="rtl"] .setting-checkbox input {
+    margin-right: 0;
+    margin-left: 6px;
+}
+
+/* Dropdowns */
+[dir="rtl"] .language-dropdown {
+    left: auto;
+    right: 20px;
+}
+
+/* Sidebar Footer */
+[dir="rtl"] .sidebar-footer {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .user-info {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .sidebar-actions {
+    flex-direction: row-reverse;
+}
+
+/* Voice Interface */
+[dir="rtl"] .voice-wave {
+    margin-left: 0;
+    margin-right: 8px;
+}
+
+[dir="rtl"] .voice-status {
+    margin-left: 0;
+    margin-right: 8px;
+}
+
+/* Typing Indicator */
+[dir="rtl"] .typing-indicator {
+    flex-direction: row-reverse;
+}
+
+/* Suggestions */
+[dir="rtl"] .suggestions {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+}
+
+[dir="rtl"] .suggestion {
+    text-align: right;
+}
+
+/* Buttons */
+[dir="rtl"] .new-chat-btn svg {
+    margin-left: 4px;
+    margin-right: 0;
+}
+
+[dir="rtl"] .send-btn svg {
+    transform: rotate(180deg);
+}
+
+/* Tooltips */
+[dir="rtl"] .tooltip {
+    text-align: right;
+}
+
+/* Modal */
+[dir="rtl"] .modal-header {
+    text-align: right;
+}
+
+[dir="rtl"] .modal-footer {
+    flex-direction: row-reverse;
+}
+
+/* Tables in messages */
+[dir="rtl"] .message-text th,
+[dir="rtl"] .message-text td {
+    text-align: right;
+}
+
+/* Audio Player */
+[dir="rtl"] .audio-controls {
+    flex-direction: row-reverse;
+}
+
+/* Search Panel */
+[dir="rtl"] .search-header {
+    flex-direction: row-reverse;
+}
+
+/* Progress Bar */
+[dir="rtl"] .upload-progress-bar {
+    background-position: right;
+}
+
+/* Responsive RTL */
+@media (max-width: 768px) {
+    [dir="rtl"] .chat-sidebar {
+        left: auto;
+        right: -280px;
+    }
+
+    [dir="rtl"] .chat-sidebar.open {
+        left: auto;
+        right: 0;
+    }
+
+    [dir="rtl"] .language-dropdown {
+        right: 10px;
+        left: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    [dir="rtl"] .citation-meta {
+        flex-direction: row-reverse;
+    }
+}

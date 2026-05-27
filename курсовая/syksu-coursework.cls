@@ -1,0 +1,253 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesClass{syksu-coursework}[2025/01/01 SykSU Course Work Class - Indent 1cm]
+
+% ==================== БАЗОВЫЙ КЛАСС ====================
+\LoadClass[14pt, a4paper]{extarticle}
+
+% ==================== КОДИРОВКИ И ЯЗЫК ====================
+\RequirePackage[T2A]{fontenc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[english,russian]{babel}
+
+% ==================== ШРИФТЫ (исправлено для кириллицы) ====================
+% Вместо times используем стандартные шрифты с поддержкой кириллицы
+
+
+% Альтернатива: используем пакет pscyr или стандартные шрифты
+% Для Times New Roman на кириллице нужно использовать пакет:
+\RequirePackage{pscyr}        % Times New Roman с поддержкой кириллицы
+\renewcommand{\rmdefault}{ftm} % Настройка для pscyr
+
+% Или можно вообще убрать явные шрифты и использовать стандартные
+% которые хорошо работают с кириллицей
+
+% ==================== ГЕОМЕТРИЯ СТРАНИЦЫ ====================
+\RequirePackage[left=30mm, right=15mm, top=20mm, bottom=20mm]{geometry}
+
+% ==================== МЕЖСТРОЧНЫЙ ИНТЕРВАЛ ====================
+\RequirePackage{setspace}
+\onehalfspacing
+
+% ==================== КРАСНАЯ СТРОКА (1.0 см) ====================
+\RequirePackage{indentfirst}
+\setlength{\parindent}{1.0cm}
+\setlength{\parskip}{0pt}
+
+% ==================== ЗАПРЕТ ПЕРЕНОСОВ ====================
+\RequirePackage[none]{hyphenat}
+\sloppy
+
+% ==================== ВЫРАВНИВАНИЕ ПО ШИРИНЕ ====================
+\RequirePackage{ragged2e}
+\justifying
+
+% ==================== НУМЕРАЦИЯ СТРАНИЦ ====================
+\RequirePackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+
+% ==================== КАЖДАЯ ГЛАВА С НОВОЙ СТРАНИЦЫ ====================
+\RequirePackage{titlesec}
+\newcommand{\sectionbreak}{\clearpage}
+
+% ==================== НАСТРОЙКА ЗАГОЛОВКОВ (отступ 1.0 см) ====================
+\newcommand{\headingformat}{\normalfont\bfseries\fontsize{14}{16}\selectfont}
+
+\setcounter{secnumdepth}{5}
+
+\makeatletter
+\def\@seccntformat#1{\csname the#1\endcsname\hspace{0.5em}}
+\makeatother
+
+\titleformat{\section}
+{\headingformat}
+{\hspace{1.0cm}\thesection}
+{0.5em}
+{}
+\titlespacing{\section}{0cm}{0pt}{0pt}
+
+\titleformat{\subsection}
+{\headingformat}
+{\hspace{1.0cm}\thesubsection}
+{0.5em}
+{}
+\titlespacing{\subsection}{0cm}{0pt}{0pt}
+
+\titleformat{\subsubsection}
+{\headingformat}
+{\hspace{1.0cm}\thesubsubsection}
+{0.5em}
+{}
+\titlespacing{\subsubsection}{0cm}{0pt}{0pt}
+
+\titleformat{\paragraph}
+{\headingformat}
+{\hspace{1.0cm}\theparagraph}
+{0.5em}
+{}
+\titlespacing{\paragraph}{0cm}{0pt}{0pt}
+
+\titleformat{\subparagraph}
+{\headingformat}
+{\hspace{1.0cm}\thesubparagraph}
+{0.5em}
+{}
+\titlespacing{\subparagraph}{0cm}{0pt}{0pt}
+
+\setcounter{secnumdepth}{10}
+\setcounter{tocdepth}{5}
+
+% ==================== НАСТРОЙКА ОГЛАВЛЕНИЯ (отступ 1.0 см) ====================
+\RequirePackage{tocloft}
+
+\renewcommand{\cftsecfont}{\normalfont\bfseries\fontsize{14}{16}\selectfont}
+\renewcommand{\cftsubsecfont}{\normalfont\fontsize{14}{16}\selectfont}
+\renewcommand{\cftsubsubsecfont}{\normalfont\fontsize{14}{16}\selectfont}
+
+\renewcommand{\cftsecpagefont}{\normalfont\fontsize{14}{16}\selectfont}
+\renewcommand{\cftsubsecpagefont}{\normalfont\fontsize{14}{16}\selectfont}
+\renewcommand{\cftsubsubsecpagefont}{\normalfont\fontsize{14}{16}\selectfont}
+
+\setlength{\cftsecindent}{1.0cm}
+\setlength{\cftsubsecindent}{1.0cm}
+\setlength{\cftsubsubsecindent}{1.0cm}
+
+\setlength{\cftsecnumwidth}{2.5cm}
+\setlength{\cftsubsecnumwidth}{3.0cm}
+\setlength{\cftsubsubsecnumwidth}{3.5cm}
+
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsubsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsubsubsecleader}{\cftdotfill{\cftdotsep}}
+
+\renewcommand{\contentsname}{Содержание}
+\renewcommand{\cfttoctitlefont}{\normalfont\bfseries\fontsize{14}{16}\selectfont}
+\setlength{\cftbeforetoctitleskip}{0pt}
+\setlength{\cftaftertoctitleskip}{12pt}
+
+% ==================== НАСТРОЙКА СПИСКОВ (отступ 1.0 см) ====================
+\RequirePackage{enumitem}
+
+\setlist{
+	leftmargin=*,
+	labelindent=0pt,
+	labelsep=0.5em,
+	itemindent=0pt,
+	listparindent=1.0cm,
+	parsep=0pt,
+	itemsep=0pt,
+	topsep=0pt,
+	partopsep=0pt
+}
+
+\setlist[itemize,1]{leftmargin=1.0cm, labelindent=0pt, labelsep=0.5em, itemindent=0pt}
+\setlist[enumerate,1]{leftmargin=1.0cm, labelindent=0pt, labelsep=0.5em, itemindent=0pt}
+\setlist[itemize,2]{leftmargin=1.75cm, labelindent=0pt, labelsep=0.5em, itemindent=0pt}
+\setlist[enumerate,2]{leftmargin=1.75cm, labelindent=0pt, labelsep=0.5em, itemindent=0pt}
+
+\renewcommand{\labelitemi}{---}
+\renewcommand{\labelitemii}{•}
+\renewcommand{\labelenumi}{\arabic{enumi}.}
+\renewcommand{\labelenumii}{\arabic{enumii}.}
+
+% ==================== БИБЛИОГРАФИЯ (отступ 1.0 см) ====================
+\let\oldthebibliography\thebibliography
+\let\endoldthebibliography\endthebibliography
+\renewenvironment{thebibliography}[1]{%
+	\oldthebibliography{#1}%
+	\setlength{\parindent}{1.0cm}%
+	\setlength{\itemindent}{0cm}%
+	\setlength{\leftmargin}{0cm}%
+	\setlength{\labelsep}{0.5em}%
+}{%
+	\endoldthebibliography%
+}
+
+% ==================== РИСУНКИ И ТАБЛИЦЫ ====================
+\RequirePackage{graphicx}
+\RequirePackage{caption}
+\RequirePackage{float}
+\RequirePackage{chngcntr}
+
+\counterwithin{figure}{section}
+\counterwithin{table}{section}
+
+\captionsetup[figure]{
+	labelsep=space,
+	justification=centering,
+	position=bottom,
+	font={normalsize},
+	skip=0pt
+}
+
+\captionsetup[table]{
+	labelsep=space,
+	justification=centering,
+	position=top,
+	font={normalsize}
+}
+
+\RequirePackage{array}
+\RequirePackage{longtable}
+\renewcommand{\arraystretch}{1.0}
+\AtBeginEnvironment{tabular}{\fontsize{13}{15}\selectfont}
+\AtBeginEnvironment{longtable}{\fontsize{13}{15}\selectfont}
+
+% ==================== ЛИСТИНГИ ====================
+\RequirePackage{listings}
+\RequirePackage{xcolor}
+
+\lstset{
+	basicstyle=\ttfamily\fontsize{13}{15}\selectfont,
+	breaklines=true,
+	breakatwhitespace=false,
+	tabsize=4,
+	showstringspaces=false,
+	frame=none,
+	numbers=none,
+	xleftmargin=0pt,
+	aboveskip=0pt,
+	belowskip=0pt
+}
+
+\newcounter{lstcounter}
+\renewcommand{\thelstcounter}{\arabic{lstcounter}}
+
+\newcommand{\listing}[2]{%
+	\refstepcounter{lstcounter}%
+	\vspace{\baselineskip}%
+	\noindent{\bfseries\fontsize{13}{15}\selectfont Листинг \thelstcounter}%
+	\begin{center}
+		{\bfseries\fontsize{13}{15}\selectfont #1}%
+	\end{center}
+	\lstinputlisting{#2}%
+	\vspace{\baselineskip}%
+}
+
+% ==================== ФОРМУЛЫ ====================
+\RequirePackage{amsmath}
+\RequirePackage{amsfonts}
+\RequirePackage{amssymb}
+
+\AtBeginDocument{%
+	\abovedisplayskip=12pt
+	\belowdisplayskip=12pt
+	\abovedisplayshortskip=12pt
+	\belowdisplayshortskip=12pt
+}
+
+% ==================== ССЫЛКИ ====================
+\RequirePackage[numbers, square, sort&compress]{natbib}
+
+% ==================== ГИПЕРССЫЛКИ ====================
+\RequirePackage[unicode, hidelinks]{hyperref}
+
+% ==================== ОТБИВКИ ====================
+\AtBeginEnvironment{figure}{\vspace{\baselineskip}}
+\AtEndEnvironment{figure}{\vspace{\baselineskip}}
+\AtBeginEnvironment{table}{\vspace{\baselineskip}}
+\AtEndEnvironment{table}{\vspace{\baselineskip}}
+
+\endinput

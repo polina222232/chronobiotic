@@ -1,0 +1,260 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesClass{SykSUCourseWork}[2026/03/21 v1.3]
+
+\LoadClass[a4paper, 14pt]{extarticle}
+
+% ==============================
+% КОДИРОВКИ И ЯЗЫКИ
+% ==============================
+\RequirePackage[T2A]{fontenc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[english,russian]{babel}
+\RequirePackage{mathtext}
+\renewcommand{\bfdefault}{bx}
+
+% ==============================
+% ПОЛЯ СТРАНИЦЫ
+% ==============================
+\RequirePackage[
+left=3cm,
+right=1cm,
+top=2cm,
+bottom=2cm,
+headheight=15pt,
+headsep=10pt,
+includehead
+]{geometry}
+
+% ==============================
+% МЕЖСТРОЧНЫЙ ИНТЕРВАЛ И АБЗАЦЫ
+% ==============================
+\RequirePackage{setspace}
+\setstretch{1.2}
+
+% ОТСТУП ПЕРВОЙ СТРОКИ 1 СМ ДЛЯ ВСЕГО ТЕКСТА
+\setlength{\parindent}{1cm}
+\setlength{\parskip}{0pt}
+
+% ==============================
+% ВЫРАВНИВАНИЕ ПО ШИРИНЕ
+% ==============================
+\RequirePackage{ragged2e}
+\justifying
+
+% ==============================
+% ЗАГОЛОВКИ РАЗДЕЛОВ (ОТСТУП ПЕРВОЙ СТРОКИ 1 СМ)
+% ==============================
+\RequirePackage{titlesec}
+\RequirePackage{needspace}
+
+% SECTION - ГЛАВА
+\titleformat{\section}
+{\normalfont\bfseries\fontsize{16pt}{20pt}\selectfont\justifying}
+{\thesection}
+{0pt}
+{\hspace{1cm}}  % ОТСТУП ПЕРВОЙ СТРОКИ 1 СМ
+\titlespacing{\section}{0pt}{12pt}{0pt}
+
+% НОВАЯ ГЛАВА НА НОВОЙ СТРАНИЦЕ
+\let\oldsection\section
+\renewcommand{\section}{%
+	\clearpage%
+	\oldsection%
+}
+
+% SUBSECTION - ПОДРАЗДЕЛ
+\titleformat{\subsection}
+{\normalfont\bfseries\fontsize{14pt}{18pt}\selectfont\justifying}
+{\thesubsection}
+{0pt}
+{\hspace{1cm}}  % ОТСТУП ПЕРВОЙ СТРОКИ 1 СМ
+\titlespacing{\subsection}{0pt}{6pt}{0pt}
+
+% ПРОВЕРКА МЕСТА ДЛЯ SUBSECTION
+\let\oldsubsection\subsection
+\renewcommand{\subsection}{%
+	\needspace{3\baselineskip}%
+	\oldsubsection%
+}
+
+% SUBSUBSECTION - ПОДПОДРАЗДЕЛ
+\titleformat{\subsubsection}
+{\normalfont\bfseries\fontsize{14pt}{18pt}\selectfont\justifying}
+{\thesubsubsection}
+{0pt}
+{\hspace{1cm}}  % ОТСТУП ПЕРВОЙ СТРОКИ 1 СМ
+\titlespacing{\subsubsection}{0pt}{4pt}{0pt}
+
+% ПРОВЕРКА МЕСТА ДЛЯ SUBSUBSECTION
+\let\oldsubsubsection\subsubsection
+\renewcommand{\subsubsection}{%
+	\needspace{2\baselineskip}%
+	\oldsubsubsection%
+}
+
+% ==============================
+% ВВЕДЕНИЕ, ЗАКЛЮЧЕНИЕ, БИБЛИОГРАФИЯ, ПРИЛОЖЕНИЯ
+% ==============================
+\newcommand{\introduction}{%
+	\clearpage
+	\section*{\hspace{1cm}Введение}
+	\addcontentsline{toc}{section}{Введение}
+}
+
+\newcommand{\conclusion}{%
+	\clearpage
+	\section*{\hspace{1cm}Заключение}
+	\addcontentsline{toc}{section}{Заключение}
+}
+
+\newcommand{\bibliolist}{%
+	\clearpage
+	\section*{\hspace{1cm}Библиографический список}
+	\addcontentsline{toc}{section}{Библиографический список}
+}
+
+\newcommand{\appendixsection}[1]{%
+	\clearpage
+	\section*{\hspace{1cm}#1}
+	\addcontentsline{toc}{section}{#1}
+}
+
+% ==============================
+% НАСТРОЙКА КОЛОНТИТУЛОВ И НУМЕРАЦИИ
+% ==============================
+\RequirePackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% ТИТУЛЬНЫЙ ЛИСТ И СОДЕРЖАНИЕ БЕЗ НОМЕРОВ
+\AtBeginDocument{%
+	\pagestyle{empty}
+}
+
+% СОДЕРЖАНИЕ
+\let\oldtableofcontents\tableofcontents
+\renewcommand{\tableofcontents}{%
+	\clearpage
+	\pagestyle{empty}%
+	\pagenumbering{gobble}%
+	\oldtableofcontents%
+	\clearpage
+	\pagenumbering{arabic}%
+	\setcounter{page}{1}%
+	\pagestyle{fancy}%
+}
+
+% ==============================
+% НАСТРОЙКА СОДЕРЖАНИЯ (ОТСТУП ПЕРВОЙ СТРОКИ 1 СМ)
+% ==============================
+\RequirePackage{tocloft}
+
+% ЗАГОЛОВОК "СОДЕРЖАНИЕ" - ВЫРАВНИВАНИЕ ПО ШИРИНЕ
+\renewcommand{\cfttoctitlefont}{\normalfont\bfseries\fontsize{16pt}{20pt}\selectfont\justifying}
+\renewcommand{\cftaftertoctitle}{\hfill}
+\setlength{\cftbeforetoctitleskip}{0pt}
+\setlength{\cftaftertoctitleskip}{20pt}
+
+% ОТСТУП ПЕРВОЙ СТРОКИ 1 СМ ДЛЯ ВСЕХ СТРОК СОДЕРЖАНИЯ
+\setlength{\cftsecindent}{1cm}
+\setlength{\cftsubsecindent}{1cm}
+\setlength{\cftsubsubsecindent}{1cm}
+
+% ШИРИНА ДЛЯ НОМЕРОВ
+\setlength{\cftsecnumwidth}{1.8cm}
+\setlength{\cftsubsecnumwidth}{1.8cm}
+\setlength{\cftsubsubsecnumwidth}{1.8cm}
+
+% ШРИФТЫ С ВЫРАВНИВАНИЕМ ПО ШИРИНЕ
+\renewcommand{\cftsecfont}{\normalfont\fontsize{12pt}{14pt}\selectfont\justifying}
+\renewcommand{\cftsubsecfont}{\normalfont\fontsize{12pt}{14pt}\selectfont\justifying}
+\renewcommand{\cftsubsubsecfont}{\normalfont\fontsize{12pt}{14pt}\selectfont\justifying}
+\renewcommand{\cftsecpagefont}{\normalfont\fontsize{12pt}{14pt}\selectfont}
+\renewcommand{\cftsubsecpagefont}{\normalfont\fontsize{12pt}{14pt}\selectfont}
+
+% ТОЧКИ-ЛИДЕРЫ
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsubsecleader}{\cftdotfill{\cftdotsep}}
+
+% ==============================
+% ПОДПИСИ РИСУНКОВ И ТАБЛИЦ
+% ==============================
+\RequirePackage{caption}
+\RequirePackage{subcaption}
+
+\captionsetup[figure]{
+	labelsep=space,
+	justification=centering,
+	position=bottom,
+	aboveskip=6pt,
+	belowskip=0pt
+}
+\renewcommand{\figurename}{Рисунок}
+
+\captionsetup[table]{
+	labelsep=space,
+	justification=centering,
+	position=top,
+	aboveskip=6pt,
+	belowskip=0pt
+}
+\renewcommand{\tablename}{Таблица}
+
+% ==============================
+% ЛИСТИНГИ КОДА
+% ==============================
+\RequirePackage{listings}
+\RequirePackage{xcolor}
+
+\definecolor{codegray}{gray}{0.9}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.95}
+
+\lstset{
+	backgroundcolor=\color{backcolour},
+	basicstyle=\ttfamily\fontsize{10pt}{12pt}\selectfont,
+	breaklines=true,
+	numbers=left,
+	numberstyle=\tiny\color{codegray},
+	frame=single,
+	captionpos=t,
+	tabsize=2,
+	xleftmargin=0.3cm,
+	xrightmargin=0.3cm
+}
+\renewcommand{\lstlistingname}{Листинг}
+
+% ==============================
+% МАТЕМАТИЧЕСКИЕ ФОРМУЛЫ
+% ==============================
+\RequirePackage{amsmath}
+\RequirePackage{amssymb}
+
+\AtBeginDocument{%
+	\abovedisplayskip=12pt plus 3pt minus 3pt
+	\abovedisplayshortskip=6pt plus 2pt minus 2pt
+	\belowdisplayskip=12pt plus 3pt minus 3pt
+	\belowdisplayshortskip=6pt plus 2pt minus 2pt
+}
+
+% ==============================
+% ГРАФИКА, ТАБЛИЦЫ, ССЫЛКИ
+% ==============================
+\RequirePackage{graphicx}
+\RequirePackage{float}
+\RequirePackage{booktabs}
+\RequirePackage{multirow}
+\RequirePackage{array}
+\RequirePackage{url}
+\RequirePackage{hyperref}
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=black,
+	citecolor=black,
+	urlcolor=blue
+}
+
+\endinput
