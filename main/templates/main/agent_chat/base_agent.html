@@ -1,3 +1,4 @@
+{% load static %}
 <main class="chat-main">
     <div class="chat-header">
         <button class="mobile-menu-btn" id="mobileMenuBtn">
@@ -19,6 +20,7 @@
             {% include 'main/agent_chat/chat_messages.html' %}
         </div>
         {% include 'main/agent_chat/loading_indicator.html' %}
+    </div>
 
     <div class="input-container">
         <div class="input-wrapper">
@@ -36,16 +38,12 @@
                 </button>
             </div>
         </div>
-        <div class="message-edit-panel" id="editPanel" style="display: none;">
-            <input class="edit-input" id="editInput" type="text">
+        <div class="message-edit-panel" id="editPanel">
+            <input class="edit-input" id="editInput" placeholder="Edit your message..." type="text">
             <button id="saveEditBtn">Save</button>
             <button id="cancelEditBtn">Cancel</button>
         </div>
     </div>
-    </div>
 
-
-    {% include 'main/agent_chat/search_results.html' %}
     {% include 'main/agent_chat/citation_display.html' %}
-    {% include 'main/agent_chat/audio_message.html' %}
 </main>

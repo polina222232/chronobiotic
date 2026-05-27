@@ -1,0 +1,43 @@
+# requirements-chat.txt
+"""
+Chat system dependencies for Chronobiotics Agent
+"""
+
+# Core dependencies
+Django>=4.2.0
+channels>=4.0.0
+channels-redis>=4.1.0
+daphne>=4.0.0
+
+# Async and WebSocket
+websockets>=12.0
+asgiref>=3.7.0
+
+# Message processing
+python-multipart>=0.0.6
+Pillow>=10.0.0
+
+# Language detection and processing
+langdetect>=1.0.9
+polyglot>=16.7.4
+
+# Markdown and formatting
+markdown>=3.5.0
+pygments>=2.17.0
+bleach>=6.1.0
+
+# Rate limiting and caching
+redis>=5.0.0
+django-redis>=5.4.0
+
+# Voice processing (optional)
+SpeechRecognition>=3.10.0
+pyaudio>=0.2.11
+gTTS>=2.3.0
+
+# Data serialization
+orjson>=3.9.0
+msgpack>=1.0.0
+
+# Monitoring
+prometheus-client>=0.19.0

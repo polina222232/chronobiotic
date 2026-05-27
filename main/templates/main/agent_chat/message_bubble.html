@@ -5,12 +5,13 @@
             <div class="message-text">{{{content}}}</div>
             <div class="message-time">{{time}}</div>
             <div class="message-actions">
-                <button class="copy-msg" title="Copy">📋</button>
-                <button class="edit-msg" title="Edit">✏️</button>
+                <button class="copy-msg" title="Copy">📋 Copy</button>
+                {{#if_eq role "user"}}
+                <button class="edit-msg" title="Edit">✏️ Edit</button>
+                {{/if_eq}}
                 {{#if_eq role "assistant"}}
-                <button class="speak-msg" title="Listen">🔊</button>
-                <button class="regenerate-msg" title="Regenerate">🔄</button>
-                <button class="share-msg" title="Share">📤</button>
+                <button class="speak-msg" title="Listen">🔊 Listen</button>
+                <button class="regenerate-msg" title="Regenerate">🔄 Regenerate</button>
                 {{/if_eq}}
             </div>
         </div>

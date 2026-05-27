@@ -1,4 +1,6 @@
-
+/**
+ * LLM Manager - Manage AI model selection
+ */
 
 class LLMManager {
     constructor() {
@@ -26,12 +28,13 @@ class LLMManager {
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: #333;
+            background: #10b981;
             color: white;
-            padding: 6px 12px;
-            border-radius: 6px;
-            z-index: 10000;
-            font-size: 12px;
+            padding: 8px 16px;
+            border-radius: 10px;
+            z-index: 10001;
+            font-size: 13px;
+            animation: slideUp 0.3s ease, fadeOut 0.3s ease 1.7s forwards;
         `;
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 2000);
@@ -42,6 +45,10 @@ class LLMManager {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        window.llmManager = new LLMManager();
+    });
+} else {
     window.llmManager = new LLMManager();
-});
+}

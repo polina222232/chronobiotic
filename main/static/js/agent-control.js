@@ -1,64 +1,55 @@
-
+/**
+ * Agent Control - Settings and preferences management
+ */
 
 (function() {
-    // Ждем полной загрузки DOM
     document.addEventListener('DOMContentLoaded', function() {
         console.log('AgentControl initializing...');
 
         // ========== SETTINGS PANEL ==========
-        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsToggle = document.getElementById('settingsToggleBtn');
         const settingsPanel = document.getElementById('settingsPanel');
 
-        if (settingsBtn && settingsPanel) {
-            console.log('Settings button found');
-            settingsBtn.addEventListener('click', function(e) {
+        if (settingsToggle && settingsPanel) {
+            settingsToggle.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Settings button clicked');
                 if (settingsPanel.style.display === 'none' || settingsPanel.style.display === '') {
                     settingsPanel.style.display = 'block';
-                    // Закрываем voice панель если открыта
                     const voicePanel = document.getElementById('voicePanel');
                     if (voicePanel) voicePanel.style.display = 'none';
                 } else {
                     settingsPanel.style.display = 'none';
                 }
             });
-        } else {
-            console.error('Settings button or panel not found!');
         }
 
         // ========== VOICE SETTINGS PANEL ==========
-        const voiceSettingsBtn = document.getElementById('voiceSettingsBtn');
+        const voiceSettingsToggle = document.getElementById('voiceSettingsToggle');
         const voicePanel = document.getElementById('voicePanel');
 
-        if (voiceSettingsBtn && voicePanel) {
-            console.log('Voice settings button found');
-            voiceSettingsBtn.addEventListener('click', function(e) {
+        if (voiceSettingsToggle && voicePanel) {
+            voiceSettingsToggle.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Voice settings button clicked');
                 if (voicePanel.style.display === 'none' || voicePanel.style.display === '') {
                     voicePanel.style.display = 'block';
-                    // Закрываем settings панель если открыта
                     if (settingsPanel) settingsPanel.style.display = 'none';
                 } else {
                     voicePanel.style.display = 'none';
                 }
             });
-        } else {
-            console.error('Voice settings button or panel not found!');
         }
 
-        // Закрытие панелей при клике вне их
+        // Close panels when clicking outside
         document.addEventListener('click', function(e) {
             if (settingsPanel && settingsPanel.style.display === 'block') {
-                if (!settingsBtn.contains(e.target) && !settingsPanel.contains(e.target)) {
+                if (!settingsToggle.contains(e.target) && !settingsPanel.contains(e.target)) {
                     settingsPanel.style.display = 'none';
                 }
             }
             if (voicePanel && voicePanel.style.display === 'block') {
-                if (!voiceSettingsBtn.contains(e.target) && !voicePanel.contains(e.target)) {
+                if (!voiceSettingsToggle.contains(e.target) && !voicePanel.contains(e.target)) {
                     voicePanel.style.display = 'none';
                 }
             }
@@ -66,9 +57,6 @@
 
         // ========== AGENT TYPE BUTTONS ==========
         const agentOptions = document.querySelectorAll('.agent-option');
-        console.log('Agent options found:', agentOptions.length);
-
-        // Загрузка сохраненного типа агента
         const savedAgent = localStorage.getItem('agentType') || 'assistant';
 
         agentOptions.forEach(btn => {
@@ -80,25 +68,17 @@
                 this.classList.add('active');
                 const agent = this.dataset.agent;
                 localStorage.setItem('agentType', agent);
-                console.log('Agent changed to:', agent);
 
-                // Обновляем статус
+                const agentNames = { assistant: 'Assistant', analyst: 'Analyst', researcher: 'Researcher' };
                 const statusText = document.getElementById('statusText');
-                if (statusText) {
-                    const names = { assistant: 'Assistant', analyst: 'Analyst', researcher: 'Researcher' };
-                    statusText.textContent = names[agent] || 'Ready';
-                }
+                if (statusText) statusText.textContent = agentNames[agent] || 'Ready';
 
-                // Показываем уведомление
                 showToast(`Switched to ${this.textContent.trim()} mode`);
             });
         });
 
         // ========== CITATION STYLE BUTTONS ==========
         const citationOptions = document.querySelectorAll('.citation-option');
-        console.log('Citation options found:', citationOptions.length);
-
-        // Загрузка сохраненного стиля цитирования
         const savedStyle = localStorage.getItem('citationStyle') || 'gost-r';
 
         citationOptions.forEach(btn => {
@@ -110,13 +90,11 @@
                 this.classList.add('active');
                 const style = this.dataset.style;
                 localStorage.setItem('citationStyle', style);
-                console.log('Citation style changed to:', style);
 
                 if (window.citationManager) {
                     window.citationManager.setStyle(style);
                 }
-
-                showToast(`Citation style changed to ${this.textContent.trim()}`);
+                showToast(`Citation style: ${this.textContent.trim()}`);
             });
         });
 
@@ -133,7 +111,6 @@
             tempSlider.addEventListener('input', function() {
                 tempVal.textContent = this.value;
                 localStorage.setItem('temperature', this.value);
-                console.log('Temperature changed to:', this.value);
             });
         }
 
@@ -143,7 +120,7 @@
             streamToggle.checked = localStorage.getItem('streamResponse') !== 'false';
             streamToggle.addEventListener('change', function() {
                 localStorage.setItem('streamResponse', this.checked);
-                console.log('Stream response:', this.checked);
+                showToast(`Streaming: ${this.checked ? 'ON' : 'OFF'}`);
             });
         }
 
@@ -152,7 +129,7 @@
             citationsToggle.checked = localStorage.getItem('showCitations') !== 'false';
             citationsToggle.addEventListener('change', function() {
                 localStorage.setItem('showCitations', this.checked);
-                console.log('Show citations:', this.checked);
+                showToast(`Citations: ${this.checked ? 'ON' : 'OFF'}`);
             });
         }
 
@@ -164,7 +141,7 @@
                 if (window.audioEffects) {
                     window.audioEffects.toggle(this.checked);
                 }
-                console.log('Sound effects:', this.checked);
+                showToast(`Sound effects: ${this.checked ? 'ON' : 'OFF'}`);
             });
         }
 
@@ -173,7 +150,7 @@
             autoScrollToggle.checked = localStorage.getItem('autoScroll') !== 'false';
             autoScrollToggle.addEventListener('change', function() {
                 localStorage.setItem('autoScroll', this.checked);
-                console.log('Auto-scroll:', this.checked);
+                showToast(`Auto-scroll: ${this.checked ? 'ON' : 'OFF'}`);
             });
         }
 
@@ -184,7 +161,7 @@
             voiceLangSelect.value = savedLang;
             voiceLangSelect.addEventListener('change', function() {
                 localStorage.setItem('voiceLanguage', this.value);
-                console.log('Voice language:', this.value);
+                showToast(`Voice language: ${this.options[this.selectedIndex].text}`);
             });
         }
 
@@ -197,7 +174,6 @@
             voiceSpeedSlider.addEventListener('input', function() {
                 voiceSpeedVal.textContent = this.value;
                 localStorage.setItem('voiceSpeed', this.value);
-                console.log('Voice speed:', this.value);
             });
         }
 
@@ -210,7 +186,6 @@
             voicePitchSlider.addEventListener('input', function() {
                 voicePitchVal.textContent = this.value;
                 localStorage.setItem('voicePitch', this.value);
-                console.log('Voice pitch:', this.value);
             });
         }
 
@@ -219,11 +194,11 @@
             autoPlayVoice.checked = localStorage.getItem('autoPlayVoice') !== 'false';
             autoPlayVoice.addEventListener('change', function() {
                 localStorage.setItem('autoPlayVoice', this.checked);
-                console.log('Auto-play voice:', this.checked);
+                showToast(`Auto-play voice: ${this.checked ? 'ON' : 'OFF'}`);
             });
         }
 
-        // GENDER BUTTONS
+        // ========== GENDER BUTTONS ==========
         const genderOptions = document.querySelectorAll('.gender-option');
         const savedGender = localStorage.getItem('voiceGender') || 'female';
 
@@ -236,12 +211,11 @@
                 this.classList.add('active');
                 const gender = this.dataset.gender;
                 localStorage.setItem('voiceGender', gender);
-                console.log('Voice gender:', gender);
-                showToast(`Voice set to ${this.textContent.trim()}`);
+                showToast(`Voice: ${this.textContent.trim()}`);
             });
         });
 
-        // TEST VOICE BUTTON
+        // ========== TEST VOICE BUTTON ==========
         const testVoiceBtn = document.getElementById('testVoiceBtn');
         if (testVoiceBtn) {
             testVoiceBtn.addEventListener('click', function() {
@@ -249,19 +223,23 @@
                 const rate = parseFloat(voiceSpeedSlider?.value || '1');
                 const pitch = parseFloat(voicePitchSlider?.value || '1');
 
-                const utterance = new SpeechSynthesisUtterance('Hello! This is a test of the voice system.');
+                const testText = lang.startsWith('ru') ? 'Привет! Это тест голосовой системы.' :
+                                lang.startsWith('es') ? '¡Hola! Esta es una prueba del sistema de voz.' :
+                                lang.startsWith('fr') ? 'Bonjour ! Ceci est un test du système vocal.' :
+                                lang.startsWith('zh') ? '你好！这是语音系统的测试。' :
+                                'Hello! This is a test of the voice system.';
+
+                const utterance = new SpeechSynthesisUtterance(testText);
                 utterance.lang = lang;
                 utterance.rate = rate;
                 utterance.pitch = pitch;
 
                 window.speechSynthesis.cancel();
                 window.speechSynthesis.speak(utterance);
-
-                showToast('Testing voice...');
+                showToast('🔊 Testing voice...');
             });
         }
 
-        // Helper function
         function showToast(message) {
             const toast = document.createElement('div');
             toast.textContent = message;
@@ -270,17 +248,19 @@
                 bottom: 20px;
                 left: 50%;
                 transform: translateX(-50%);
-                background: #333;
+                background: #10b981;
                 color: white;
                 padding: 8px 16px;
-                border-radius: 8px;
-                z-index: 10000;
+                border-radius: 10px;
+                z-index: 10001;
                 font-size: 13px;
+                font-weight: 500;
+                animation: slideUp 0.3s ease, fadeOut 0.3s ease 1.7s forwards;
             `;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 2000);
         }
 
-        console.log('AgentControl initialized successfully');
+        console.log('AgentControl initialized');
     });
 })();

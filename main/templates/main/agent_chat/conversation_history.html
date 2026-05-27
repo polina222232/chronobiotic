@@ -1,30 +1,16 @@
-<div class="model-selector">
-    <div class="model-header">
-        <svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14">
-            <path d="M12 2a10 10 0 1 0 10 10 10 10 0 0 0-10-10z"/>
-            <path d="M12 6v6l4 2"/>
-        </svg>
-        <span>AI Model</span>
+<div class="history-section">
+    <div class="history-header">
+        <span data-i18n="recent">Recent chats</span>
+        <button class="sidebar-action" id="searchHistoryBtn" title="Search">
+            <svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" x2="16.65" y1="21" y2="16.65"/>
+            </svg>
+        </button>
     </div>
-    <select class="model-select" id="modelSelect">
-        <optgroup label="Text Models">
-            <option value="bloom">BLOOM (Default)</option>
-            <option value="gpt4">GPT-4</option>
-            <option value="claude">Claude 3</option>
-            <option value="llama">LLaMA 3</option>
-            <option value="mistral">Mistral</option>
-            <option value="gemini">Gemini Pro</option>
-        </optgroup>
-        <optgroup label="Vision Models">
-            <option value="gpt4v">GPT-4 Vision</option>
-            <option value="claude3v">Claude 3 Vision</option>
-            <option value="gemini-vision">Gemini Vision</option>
-        </optgroup>
-        <optgroup label="Chemistry Models">
-            <option value="chemberta">ChemBERTa</option>
-            <option value="molfm">MolFM</option>
-            <option value="megan">MEGAN</option>
-            <option value="grover">Grover</option>
-        </optgroup>
-    </select>
+    <input class="history-search" id="historySearch" placeholder="Search conversations..." style="display: none;"
+           type="text">
+    <ul class="history-list" id="historyList">
+        <li class="history-item empty" data-i18n="no_chats">No chats yet</li>
+    </ul>
 </div>

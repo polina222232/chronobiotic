@@ -119,3 +119,7 @@ class BaseAgent(ABC):
     def register_handler(self, message_type: str, handler: Callable):
         """Register a handler for specific message type"""
         self._message_handlers[message_type] = handler
+
+
+class AgentContext:
+    pass
