@@ -25,7 +25,7 @@ Chronobiotic Agent — это мощная система на базе Django �
 
 1. **Клонируйте репозиторий:**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/polina222232/chronobiotic/tree/master
    cd chronobiotic-agent
    ```
 
