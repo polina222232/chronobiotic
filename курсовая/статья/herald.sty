@@ -1,0 +1,174 @@
+\textwidth135mm
+\textheight205mm
+% \topmargin20mm
+\evensidemargin15mm
+\oddsidemargin15mm
+% \tolerance1000
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\let\chapter=\section
+\def\ext@figure{lot}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\udk#1{\def\theudk{#1}}
+\def\doi#1{\def\thedoi{#1}}
+\def\preamble#1{\def\thepreamble{#1}}
+\def\author#1{\def\theauthor{#1}}
+\def\engauthor#1{\def\theengauthor{#1}}
+\def\title#1{\def\thetitle{#1}}
+\def\citationtitle#1{\def\thecitationtitle{#1}}
+\def\grant#1{\def\thegrant{#1}\granttrue}
+\def\ruscontauth#1{\def\theruscontauth{#1}}
+\def\rusconttit#1{\def\therusconttit{#1}}
+\def\engcontauth#1{\def\theengcontauth{#1}}
+\def\engconttit#1{\def\theengconttit{#1}}
+\def\colontit#1{\def\thecolontit{#1}\colontittrue}
+\def\date#1{\def\thedate{#1}}
+\def\rubric#1{\def\therubric{#1}}
+\def\articletype#1{\def\thearticletype{#1}}
+\def\engrubric#1{\def\theengrubric{#1}}
+\def\organization#1{\def\theorganization{#1}\organizationtrue}
+\def\engorganization#1{\def\theengorganization{#1}}
+\def\paper{\setcounter{equation}{0}
+           \setcounter{figure}{0}
+           \setcounter{footnote}{0}
+           \setcounter{section}{0}
+           \setcounter{subsection}{0}
+           \setcounter{table}{0}
+           \addcontentsline{toc}{section}{{\bf\theruscontauth}~{\it\therusconttit}}
+           \addcontentsline{lof}{section}{{\bf\theengcontauth}~{\it\theengconttit}}
+           \vbox to0pt{\dimen0=\textheight
+                       \advance\dimen0 5mm%\baselineskip
+                       \vbox to\dimen0{\vfill\hbox to0pt{\hskip-\parindent%
+                       \footnotesize\copyright\ \theruscontauth, \theyear.\hss}}\vss}
+
+            \moveright27mm\vbox{\itshape
+            {\small\noindentВестник Сыктывкарского университета.\\
+            Серия 1: Математика. Механика. Информатика. \theyear.\\Выпуск \thenumb~(\thesubnumb)\\}
+            {\small\it\noindent Bulletin of Syktyvkar  University.\\
+            Series 1: Mathematics. Mechanics. Informatics.}{\small\theyear;\thenumb(\thesubnumb)}
+            }
+           \vskip1.5mm
+           \begin{center}\therubric\hfill\thearticletype\end{center}
+           \vskip1.5mm
+           {\noindent УДК~\theudk\\
+           \noindent https://doi.org/\thedoi}
+           \begin{center}
+             {\sc\thetitle}
+             \large{\ifgrant\footnote{\thegrant}\fi}
+           \end{center}
+           {\noindent\textbf\theauthor\\}
+           {\noindent\theorganization}
+           \markboth{\theruscontauth}
+                    {\ifcolontit\thecolontit\else\therusconttit\fi}
+           \thispagestyle{empty}}
+
+\def\endpaper{\par\nobreak\medskip\small{\it\noindent
+              \iforganization\theorganization
+              \else{ }\fi
+              \hfill Поступила~\thedate}}
+
+\def\annot{\small\list{}{\listparindent 1.5em
+ \itemindent\listparindent
+ \rightmargin\leftmargin\parsep 0pt plus 1pt}\item[]}
+\let\endannot=\endlist
+
+\def\summary{\begin{center}\theengrubric\end{center}Original article\begin{center}\textbf{\theengconttit}\end{center}{\noindent\textbf\theengauthor}\\{\noindent\theengorganization}\vskip1.5mm}
+
+\newif\ifcolontit\colontitfalse
+\newif\ifgrant\grantfalse
+\newif\iforganization\organizationfalse
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\addto\captionsrussian{\def\contentsname{Содержание}
+                       \def\listfigurename{Contents}
+                       \def\refname{Список источников}
+                       \def\bibname{Список источников}
+                       \def\figurename{Рис.}
+                       \def\tablename{Табл.}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\thesection{\arabic{section}}
+\def\thesubsection{\thesection.\arabic{subsection}}
+\def\initsect{\addtocounter{section}{1}\setcounter{subsection}{0}}
+\def\rusordsection#1{\def\@currentlabel{\thesection}\vskip 2ex plus 1ex\goodbreak%
+  \initsect\begin{center}\large\bf\S\thesection.\hskip .5em #1\end{center}}
+\def\spsection#1#2{\vskip 2ex plus 1ex\goodbreak%
+  \indent {\bf #2}\par}
+\def\russection{\@ifnextchar*{\spsection}{\rusordsection}}
+
+
+\def\ordsection#1{\def\@currentlabel{\thesection}\vskip 2ex plus 1ex\goodbreak%
+  \initsect{\large\bf\thesection.\hskip .5em #1}\par}
+\def\section{\@ifnextchar*{\spsection}{\ordsection}}
+
+\def\subsection#1{\def\@currentlabel{\thesubsection}\vskip .8ex plus .5ex%
+  \ifnum\c@subsection=0\par\else\goodbreak\fi\addtocounter{subsection}{1}%
+  \normalsize\bf\thesubsection.\hskip .4em #1\rm\hskip .6em}
+\def\theequation{\arabic{equation}}
+
+\def\@biblabel#1{#1.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\inp#1{\begingroup\input{#1}\endgroup\newpage}
+\def\math{\addtocontents{toc}{\noindent{\bf Математика}}
+          \addtocontents{lof}{\noindent{\bf Mathematics}}}
+\def\applmathandmech{\addtocontents{toc}{\noindent{\bf Прикладная математика и механика}}
+                     \addtocontents{lof}{\noindent{\bf Applied mathematics and mechanics}}}
+\def\informat{\addtocontents{toc}{\noindent{\bf Информатика}}
+              \addtocontents{lof}{\noindent{\bf Computer sciences}}}
+\def\applinf{\addtocontents{toc}{\noindent{\bf Математика, прикладная математика }}
+              \addtocontents{lof}{\noindent{\bf Mathematics, applied mathematics}}}
+\def\nastav{\addtocontents{toc}{\noindent{\bf Наставник-ученик}}
+              \addtocontents{lof}{\noindent{\bf Tutor-follower}}}
+\def\prof{\addtocontents{toc}{\noindent{\bf Методические материалы}}
+              \addtocontents{lof}{\noindent{\bf Methodical materials}}}
+\def\letter{\addtocontents{toc}{\noindent{\bf Письма в редакцию}}
+              \addtocontents{lof}{\noindent{\bf Letter}}}
+\def\brnot{\addtocontents{toc}{\noindent{\bf Краткие научные сообщения}}
+           \addtocontents{lof}{\noindent{\bf Brief scientific notes}}}
+\def\chron{\addtocontents{toc}{\noindent{\bf Хроника университетской жизни}}
+           \addtocontents{lof}{\noindent{\bf Chronicle of the university life}}}
+\def\dates{\addtocontents{toc}{\noindent{\bf Юбилейные даты}}
+           \addtocontents{lof}{\noindent{\bf Anniversaries}}}
+\def\erratum{\addtocontents{toc}{\noindent{\bf Erratum}}
+            \addtocontents{lof}{\noindent{\bf Erratum}}}
+\def\pref{\addcontentsline{toc}{chapter}{Персоналии}
+\addcontentsline{lof}{chapter}{Authors}}
+\def\prefo{\addcontentsline{toc}{chapter}{Слово ответственного редактора}
+\addcontentsline{lof}{chapter}{The word of the chief editor}}
+          
+\def\mem{\addtocontents{toc}{\noindent{\bf Памятные даты}}
+           \addtocontents{lof}{\noindent{\bf Memoirs}}}
+
+
+%\def\pref{\addtocontents{toc}{\noindent{\bf Предисловие}}
+%          \addtocontents{lof}{\noindent{\bf Preface}}}
+
+%\vskip15cm
+%\newpage
+
+\def\numb#1{\def\thenumb{#1}}
+
+\def\subnumb#1{\def\thesubnumb{#1}}
+
+\def\year#1{\def\theyear{#1}}
+
+\def\edboard#1{\def\theedboard{#1}}
+
+\def\edinchif#1{\def\theedinchif{#1}}
+
+\def\addr#1{\def\theaddr{#1}}
+
+\def\edit#1#2#3{\def\theedit{Редактор~#1\\
+Компьютерный макет~#2\\Корректор~#3}}
+
+\def\outputdata#1{\def\theoutputdata{#1}}
+
+\def\tip#1{\def\thetip{#1}}
+

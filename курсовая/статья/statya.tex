@@ -1,0 +1,162 @@
+\documentclass[a4paper,12pt]{book}
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage[cp1251]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{herald}
+
+% Исправление проблем с математическим режимом
+\makeatletter
+% Отключаем проблемные команды в математическом режиме
+\def\CYRR{R}
+\def\CYRII{I}
+\def\CYRS{S}
+\def\CYRG{G}
+\def\cyrie{e}
+\def\cyryo{yo}
+\def\cyrdze{dz}
+\def\cyrje{je}
+\def\cyrdzhe{dzh}
+\def\cyrgup{g}
+\def\CYRUSHRT{Sh}
+\def\CYRDZE{DZ}
+\def\CYRDJE{DJ}
+\makeatother
+
+% Переопределяем problematic commands
+\let\russection\section
+\let\endsection\relax
+\begin{document}
+	
+	\udk{539.3}                                             % УДК статьи
+	\year{2022}                                             % Предполагаемый год издания статьи
+	\numb{0}                                                % Номер журнала, можно не заполнять
+	\subnumb{0}                                             % Номер журнала, можно не заполнять
+	\doi{10.34130/1992-2752\_\theyear\_\thenumb\_\thepage}  % Не нужно изменять, DOI формируется автоматически
+	\rubric{ПРИКЛАДНАЯ МАТЕМАТИКА И МЕХАНИКА}               % Рубрика журнала, в которую будет помещена статья
+	\articletype{Научная статья}                            % Тип статьи
+	\engrubric{Applied mathematics and mechanics}           % Тип статьи (на англ. языке)
+	
+	\author{Е. М. Вечтомов, В. В. Чермных}
+	\engauthor{Vechtomov E. M., Chermnykh V. V.}
+	\title{\fontsize{12}{1}{\bf ОСНОВНЫЕ НАПРАВЛЕНИЯ РАЗВИТИЯ\\ТЕОРИИ ПОЛУКОЛЕЦ}\normalsize}
+	\citationtitle{Основные направления развития теории полуколец}
+	\ruscontauth{Вечтомов Е. М., Чермных В. В.}
+	\rusconttit{Основные направления развития теории полуколец}
+	\colontit{Основные направления развития теории полуколец}
+	\engcontauth{Vechtomov E. M., Chermnykh V. V.}
+	\engconttit{Main directions of the development of the semiring theory}
+	\date{20.20.2020}
+	\organization{Вятский государственный университет\\Сыктывкарский государственный\\университет им. Питирима Сорокина}
+	\engorganization{Vyatka State University,\\Pitirim Sorokin Syktyvkar State University, vecht@mail.ru}
+	
+	\begin{paper}
+		\vskip5mm
+		\begin{annot}
+			\textbf{\itshape Аннотация.}
+			% Insert here your annotation text
+			В настоящей статье выделены и проанализированы три основных направления становления и развития теории полуколец. Рассмотрены кольце-модульное направление, обобщающее и расширяющее теорию колец и модулей на полукольца и полумодули над ними; универсально-алгебраическое направление, базирующееся на универсальной алгебре и теории полугрупп; направление, связанное с исследованием специальных классов полуколец и нацеленное на применения полуколец внутри математики, в компьютерных науках, в приложениях математики. Первые два направления содержат изучение общей теории полуколец, построение структурных теорий для отдельных важных и интересных классов абстрактных полуколец. Третье направление включает в себя, в частности,  описание конечных полуколец с теми или иными условиями.
+			
+			\textbf{\itshape Ключевые слова: } полукольцо, полутело, полумодуль, кольцо, дистрибутивная решетка, развитие теории полуколец.
+		\end{annot}
+		
+		\textbf{\itshape Для цитирования: } \theruscontauth~\thecitationtitle~//~\textit{Вестник Сыктывкарского университета. Сер. 1: Математика. Механика. Информатика.} \theyear. Вып. \thenumb~(\thesubnumb). C.~4$-$10. https://doi.org/10.34130/1992-2752\_\theyear\_\thenumb\_4
+		
+		\newpage
+		\summary
+		
+		\begin{annot}
+			\textbf{\itshape Annotation.}
+			% Insert here your annotation text
+			The article highlights and analyzes the main directions of formation and development of Semiring Theory. The first ring-module direction summarizes and extends the theory of rings and modules onto semirings and semimodules over them. The next one is a universal algebraic direction that is based on Universal Algebra and Group Theory. The third direction is connected with study of special classes of semirings and is aimed at using semirings within Mathematics, in Computer Sciences and in applications of Mathematics. The first two directions contain investigating of the general theory of semirings, building structural theories for certain important and interesting classes of abstract semirings. The third direction includes describing of finite semirings with certain conditions.
+			
+			\textbf{\itshape Keywords: } semiring, semifield, semimodule, ring, distributive lattice, development of Theory of Semirings.
+		\end{annot}
+		
+		\textbf{\itshape For citation: } \theengcontauth~\theengconttit.~\textit{Bulletin of Syk\-tyv\-kar  University, Series 1: Mathematics. Mechanics. Informatics}, \theyear, No.~\thenumb~(\thesubnumb), pp.~4$-$10. https://doi.org/10.34130/1992-2752\_\theyear\_\thenumb\_4
+		
+		\vspace{5mm}
+		
+		\textbf{Введение}\\
+		Класс полуколец содержит класс всех (ассоциативных) колец и класс всех дистрибутивных решеток, ряд известных числовых систем.
+		
+		Как указано в \cite{golan99} термин полукольцо впервые появился в работе Г.~Вандивера \cite{vand34}, но неявно полукольца использовались еще Р. Дедекиндом \cite{ded1894} при исследованиях решетки идеалов колец,  Д. Гильбертом \cite{hilb1899}, при рассмотрении вопросов аксиоматики числовых систем.
+		
+		Систематическое изучение полуколец началось в 50-е гг. XX века в работах А. Алмейда Косты, С. Берна,  Г. Зассенхауса, К. Исеки, М.~Хендриксона, В. Словиковского, В. Завадовского и др.  Так, рассматривались идеалы полуколец, а среди них выделялись и исследовались полустрогие идеалы, гомоморфизмы (следовательно, формулировались и теоремы о гомоморфизмах), фактор-полукольца, конгруэнции на полукольцах. Отметим, что Берном и Зассенхаусом получен полукольцевой аналог классической теоремы Веддерберна - Артина для полупервичных колец.
+		
+		[...]
+		
+		\textbf{Материалы и методы}\\
+		Многочисленные полукольца возникают при рассмотрении различных \textit{$t$-норм} и \textit{$t$-конорм} --- ассоциативных коммутативных операций на $\mathbb I$. Такие полукольца появились и используются в нечеткой логике --- разделе математики, являющемся обобщением классической логики и теории множеств и базирующемся на понятии нечеткого множества, впервые введенного Лотфи Заде в 1965 г.
+		
+		[...]
+		
+		\textbf{Результаты}\\
+		В отдельных книгах и монографиях встречались упоминания о полукольцах, говорилось о перспективах их развития (L. Fuchs, {\it Partially ordered algebraic systems}; 1963, А. Г. Курош, \textit{Общая алгебра. Лекции 1969—1970 учебного года} (1974 г. издания)). Таким образом,  50--80 годы стали периодом становления теории полуколец, и полукольцо все еще оставалось достаточно экзотическим объектом.
+		
+		[...]
+		
+		\textbf{Обсуждение}\\
+		Ситуация стала меняться с 90-х гг. прошлого века. Постепенно накопленный материал по полукольцам  нашел отражение в монографии Г. Вайнерта и У. Хебиша \cite{her_wei98} и особенно --- в первой монографии Дж.~Голана \cite{gol91} и в ее расширенном варианте \cite{golan99}. В настоящее время определение полукольца, которое использовал Голан, наиболее употребительно (см. ниже определение 1). Большую роль сыграли обзоры К. Глазека по полукольцам, их приложениям и близким вопросам  \cite{glaz85},\cite{gkaz00}.
+		
+		[...]
+		
+		\begin{thebibliography}{10}
+			
+			% 1
+			\bibitem{golan99} \textbf{Golan J. S.} Semirings and their Applications. Dordrecht: Kluwer Academic Publishers, 1999. 382 p.
+			
+			% 2
+			\bibitem{vand34}    \textbf{Vandiver H. S.} Note on a simple type of algebra in which cancelation law of addition does not hold // \textit{Bull. Amer. Math. Soc. 1934. V. 40. Pp. 914--920.}
+			
+			% 3
+			\bibitem{ded1894} \textbf{Dedekind R.} Uber die Theorie der ganzen algebraischen Zahlen~// \textit{Supplement XI to P.G. Lejeune Dirichlet: Vorlessungen Uber Zahlentheorie, 4 Anfl., Druck und Verlag, Braunschweig. 1894.}
+			
+			% 4
+			\bibitem{hilb1899} \textbf{Hilbert D.} Uber den Zahlbegriff // \textit{Jahresber. Deutsch. Math. Verein.  1899. V. 8. Pp. 180--184.}
+			
+			% 5
+			\bibitem{her_wei98} \textbf{Hebisch U., Weinert H. J.} Semirings: theory and applications in computer science. Series in Algebra. Vol. V. World Scientific. Singapore, 1998. 361 p.
+			
+			% 6
+			\bibitem{gol91} \textbf{Golan J. S.} The theory of semirings with applications in mathemayics and theoretical computer science // \textit{Pitman monographs and syrveys in pure and applied mathematics. 1992 (1991). V. 54.}
+			
+			% 7
+			\bibitem{glaz85} \textbf{Glazek K.} A Short Guide Through the Literature on Semirings // \textit{Preprint No. 39. University of Wroclaw, Math. Inst., Wroclaw.  1985.}
+			
+			% 8
+			\bibitem{gkaz00} \textbf{Glazek K.} A Short Guide to the Literature on Semirings and Their Applications in Mathematics and Computer Science.  Technical University Press. 2002.
+			
+		\end{thebibliography} 
+		
+		\renewcommand{\bibname}{References}
+		\begin{thebibliography}{10}
+			
+			% 1
+			\bibitem{golan99} \textbf{Golan J. S.} \textit{Semirings and their Applications.} Dordrecht: Kluwer Academic Publishers, 1999. 38 p.
+			
+			% 2
+			\bibitem{vand34}    \textbf{Vandiver H. S.} Note on a simple type of algebra in which cancelation law of addition does not hold. \textit{Bull. Amer. Math. Soc.}, 1934, V. 40. Pp. 914--920.
+			
+			% 3
+			\bibitem{ded1894} \textbf{Dedekind R.} Uber die Theorie der ganzen algebraischen Zahlen \textit{Supplement XI to P.G. Lejeune Dirichlet: Vorlessungen Uber Zahlentheorie}, 4 Anfl., Druck und Verlag, Braunschweig, 1894.
+			
+			% 4
+			\bibitem{hilb1899} \textbf{Hilbert D.} Uber den Zahlbegriff. \textit{Jahresber. Deutsch. Math. Verein.},  1899, V. 8. Pp. 180--184.
+			
+			% 5
+			\bibitem{her_wei98} \textbf{Hebisch U., Weinert H. J.} \textit{Semirings: theory and applications in computer science.} Series in Algebra. Vol. V. World Scientific, Singapore, 1998. 361 p.
+			
+			% 6
+			\bibitem{gol91} \textbf{Golan J. S.} The theory of semirings with applications in mathemayics and theoretical computer science. \textit{Pitman monographs and syrveys in pure and applied mathematics}, V. 54, 1992 (1991).
+			
+			% 7
+			\bibitem{glaz85} \textbf{Glazek K.} A Short Guide Through the Literature on Semirings. \textit{Preprint No. 39. University of Wroclaw}, Math. Inst., Wroclaw,  1985.
+			
+			% 8
+			\bibitem{gkaz00} \textbf{Glazek K.} \textit{A Short Guide to the Literature on Semirings and Their Applications in Mathematics and Computer Science.} Technical University Press, 2002.
+			
+		\end{thebibliography} 
+		
+	\end{paper}
+	
+\end{document}
