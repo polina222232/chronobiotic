@@ -30,7 +30,7 @@ services:
 
   celery:
     build: .
-    command: celery -A chronobioticagent worker -l info
+    command: celery -A chronobiotic worker -l info
     volumes:
       - .:/app
     env_file:
@@ -41,7 +41,7 @@ services:
 
   celery-beat:
     build: .
-    command: celery -A chronobioticagent beat -l info
+    command: celery -A chronobiotic beat -l info
     volumes:
       - .:/app
     env_file:

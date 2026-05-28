@@ -1,20 +1,61 @@
+```
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.ENV
+.ENV.*
+.venv.bak/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git/modules/
+.pytest_cache/
+.hypothesis/
+.eggs/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+.lib/
+.libs/
+include/
+share/
+.manifest
+.spec
+.DS_Store
+Thumbs.db
+
 # Django
 *.log
-*.pot
-*.pyc
-__pycache__/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-media/
-staticfiles/
 
-# Virtual Environment
-venv/
-env/
-ENV/
+# Docker
+.dockerenv
+Dockerfile*
+docker-compose*
+
+# Environment variables
 .env
-.venv
+.env.local
+.env.*
+!env.example
 
 # IDE
 .vscode/
@@ -22,14 +63,24 @@ ENV/
 *.swp
 *.swo
 *~
-.DS_Store
 
 # OS
+.DS_Store
 Thumbs.db
+ehthumbs.db
+Icon?
+.directory
+.Trashes
+lost+found/
 
-# Coverage
-.coverage
+# Testing
 htmlcov/
+.coverage
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
 
 # Distribution / packaging
 .Python
@@ -45,43 +96,37 @@ parts/
 sdist/
 var/
 wheels/
-pip-wheel-metadata/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 
-# PyInstaller
-*.manifest
-*.spec
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+# Compressed files
+*.zip
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.gz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.zst
+*.lz4
+*.lzh
+*.cab
+*.arj
+*.rpm
+*.deb
+*.Z
+*.lz
+*.lzo
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
+# Temp files
+*.tmp
+~*
+```
